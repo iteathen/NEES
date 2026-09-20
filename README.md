@@ -23,7 +23,7 @@ and give a human or coding agent a precise implementation contract for represent
 6. Use [AGENT_USAGE.md](AGENT_USAGE.md) when directing coding agents.
 7. Consult [REFERENCES.md](REFERENCES.md) for the research/source map.
 
-The Draft 0.2 research reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md).
+The Draft 0.2 runtime-grounding reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md). Draft 0.3's maximal-effort rationale is preserved at [research/2026-09-20-maximal-effort-doctrine.md](research/2026-09-20-maximal-effort-doctrine.md).
 
 ## Governing idea
 
