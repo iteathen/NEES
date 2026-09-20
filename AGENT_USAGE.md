@@ -31,15 +31,21 @@ before designing E0-E2 implementation changes.
 3. identify the owning boundary that can establish invariants once;
 4. inspect the current representation and runtime boundary;
 5. identify required vs accidental generality;
-6. identify the largest currently known cost class for work-priority purposes;
-7. select candidate NEES methods;
-8. state admission condition and falsifier for each realization-sensitive method;
-9. identify capacity/lifetime/failure behavior;
-10. identify runtime/platform assumptions;
-11. check the stale-advice firewall for the proposed tactic;
-12. inventory the affected E0-E2 machine-cost neighborhood: calls, branches, loads/stores, allocations, conversions, dispatch, synchronization, transport, and runtime machinery;
-13. identify known or suspected avoidable costs even when they are smaller than the current dominant bottleneck;
-14. if this is the first NEES-EXTREME adoption of the scope, perform a complete E0-E2 baseline cost inventory; otherwise load the inherited debt/disposition record and audit the affected causal neighborhood.
+6. identify the **smallest enclosing causal optimization** whose total machine-cost advantage depends on the operation being considered;
+7. classify the local cost as standalone, enabling, coupled/entangled, or presently unknown with respect to that enclosing optimization;
+8. identify the largest currently known cost class for work-priority purposes;
+9. select candidate NEES methods;
+10. state admission condition and falsifier for each realization-sensitive method;
+11. identify capacity/lifetime/failure behavior;
+12. identify runtime/platform assumptions;
+13. check the stale-advice firewall for the proposed tactic;
+14. inventory the affected E0-E2 machine-cost neighborhood: calls, branches, loads/stores, allocations, conversions, dispatch, synchronization, transport, and runtime machinery;
+15. identify known or suspected avoidable costs even when they are smaller than the current dominant bottleneck;
+16. determine whether removing or changing any local cost could weaken a larger structural optimization, alter its amortization, increase coordination/data movement elsewhere, or destroy a beneficial cross-component interaction;
+17. if a local cost appears to enable a larger win, preserve it provisionally as a candidate **TRADEOFF** until an alternative is shown to preserve or improve the enclosing optimization;
+18. if this is the first NEES-EXTREME adoption of the scope, perform a complete E0-E2 baseline cost inventory; otherwise load the inherited debt/disposition record and audit the affected causal neighborhood.
+
+A local rule or method failure is **not by itself authority to dismantle an enclosing optimization**. The agent must first establish whether the allegedly undesirable local mechanism is an enabling cost, coupling cost, or deliberate tradeoff of the larger realization.
 
 ### During implementation
 
@@ -54,8 +60,12 @@ before designing E0-E2 implementation changes.
 9. continue through the coherent optimization without stopping after each edited line/helper to run the full test suite, benchmark matrix, profiler, or generated-code inspection;
 10. checkpoint reasoning and durable progress regularly;
 11. run a targeted development check when its result can change the next design decision, falsify a premise, or establish a correctness invariant required for continued work;
-12. do not stop an E0/E1 optimization solely because the remaining candidate is small or the current implementation is already fast;
-13. remove, cost out, supersede, prove unavoidable, or durably record remaining known avoidable hot-path work.
+12. do not promote a locally cheaper realization when it increases total machine cost of the smallest enclosing causal optimization;
+13. do not stack individually attractive NEES methods when their interaction damages a stronger structural optimization;
+14. when a locally inferior mechanism enables a larger win, preserve it as a TRADEOFF unless a replacement preserves or improves the enclosing win;
+15. keep local optimization debt visible without treating that debt as permission to break the architecture that currently contains it;
+16. do not stop an E0/E1 optimization solely because the remaining candidate is small or the current implementation is already fast;
+17. remove, cost out, supersede, prove unavoidable, or durably record remaining known avoidable hot-path work.
 
 ### Qualification boundary
 
@@ -64,6 +74,10 @@ The default qualification unit is the coherent completed pull request or equival
 At that boundary, run the applicable correctness, NEES conformance, structural detector, runtime/JIT, performance, regression, and negative-control work required by the project.
 
 For NEES-EXTREME, also perform the maximal-effort cost audit over the affected E0-E2 causal neighborhood and report unresolved optimization debt.
+
+Qualification MUST evaluate the change at the **smallest enclosing causal boundary that owns the claimed performance effect**, not only at the edited subcomponent. Local counters and microbenchmarks are supporting evidence. They do not override a regression in the enclosing composite realization unless that regression is an explicit, justified tradeoff for a still larger measured win.
+
+If a composite optimization derives its advantage from interaction among multiple parts, qualify the composite as a unit. A subpart MAY remain locally slower, more complex, more allocating, or otherwise non-ideal when that cost enables lower total machine cost for the enclosing realization.
 
 Reuse inherited runtime-profile and previously qualified method evidence unless the change crosses an admission boundary or requalification trigger.
 
@@ -169,9 +183,14 @@ If current primary evidence is unavailable, mark the tactic UNVERIFIED rather th
 
 - What machine work remains after required semantics and constraints are fixed?
 - Which loads/stores, branches, calls, conversions, allocations, synchronization events, copies, or runtime mechanisms are plausibly avoidable?
+- What is the smallest enclosing causal optimization that this operation participates in?
+- Is this local cost standalone, or does it enable/amortize/remove greater cost elsewhere?
+- Would removing the local cost weaken worker utilization, locality, batching, specialization, determinism, coordination amortization, data reuse, or another cross-component advantage?
+- Is the performance evidence being read at the correct enclosing boundary rather than only at a convenient microbenchmark?
 - Is a retained operation required, a tradeoff that removes greater cost, unavoidable on the selected profile, costed out against an alternative, or unresolved debt?
 - Does a candidate reduce total cycles/critical-path cost even if it increases instruction count?
 - Are we ignoring a known cost only because another bottleneck is larger?
+- Conversely, are we destroying a large composite win merely to remove a small local cost?
 - Have small exact opportunities been preserved for later rather than silently discarded?
 - Is "fast enough" being used as an unstated stopping rule?
 
@@ -209,6 +228,9 @@ Agents MUST NOT justify an E0-E2 implementation with only:
 - "this is already fast enough";
 - "that is not the bottleneck";
 - "that improvement is too small to matter";
+- "this subpart violates a NEES preference, therefore the enclosing optimization should be rewritten";
+- "the local benchmark improved, therefore the system improved";
+- "every applicable NEES method should be stacked";
 - "Node core does this" without identifying why.
 
 The implementation argument must name the semantic boundary and actual execution structure removed or preserved.
