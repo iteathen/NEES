@@ -44,3 +44,10 @@ NEES separates:
 2. **Node/V8 realization methods** — concrete methods that can be revision-sensitive.
 
 This prevents temporary V8 behavior from becoming permanent folklore while still giving agents exact methods to use now.
+
+## Automated checks
+
+The `verify` check runs on pull requests and pushes to main and release branches.
+Run `node tools/verify-repository.mjs` locally to check required documents, UTF-8,
+merge markers, JSON and JavaScript syntax, and relative Markdown file links.
+These are document-integrity checks, not certification of NEES conformance or performance.
