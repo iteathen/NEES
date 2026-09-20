@@ -1120,7 +1120,9 @@ Do not let a successful local trick become an undocumented universal rule.
 **Applies:** NEES-EXTREME E0-E2  
 **Stability:** STABLE
 
-At the coherent qualification boundary, inspect the affected hot execution from semantic requirement through runtime/machine realization.
+At first NEES-EXTREME adoption, inspect the **complete declared E0-E2 hot scope** from semantic requirement through runtime/machine realization.
+
+After a baseline audit exists, each coherent qualification boundary inspects the affected hot execution plus inherited debt whose assumptions were touched or invalidated.
 
 For each repeated operation or mechanism reasonably visible in the affected neighborhood, consider:
 
@@ -1152,7 +1154,7 @@ Disposition each known cost as one of:
 
 Do not classify a cost as NOT-APPLICABLE merely because its measured or expected isolated effect is small.
 
-The audit scope is the affected causal neighborhood of the coherent change, not a demand to re-audit the entire program after every line edit. Existing durable debt remains inherited until resolved or requalified.
+After the initial baseline, the audit scope is the affected causal neighborhood of the coherent change, not a demand to re-audit the entire program after every line edit. Existing durable debt remains inherited until resolved or requalified.
 
 ---
 
