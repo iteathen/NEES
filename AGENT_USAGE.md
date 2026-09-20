@@ -40,7 +40,7 @@ before designing E0-E2 implementation changes.
 12. identify runtime/platform assumptions;
 13. check the stale-advice firewall for the proposed tactic;
 14. inventory the affected E0-E2 machine-cost neighborhood: calls, branches, loads/stores, allocations, conversions, dispatch, synchronization, transport, and runtime machinery;
-15. identify known or suspected avoidable costs even when they are smaller than the current dominant bottleneck;
+15. identify observed or suspected candidate costs even when they are smaller than the current dominant bottleneck;
 16. determine whether removing or changing any local cost could weaken a larger structural optimization, alter its amortization, increase coordination/data movement elsewhere, or destroy a beneficial cross-component interaction;
 17. if a local cost appears to enable a larger win, preserve it provisionally as a candidate **TRADEOFF** until an alternative is shown to preserve or improve the enclosing optimization;
 18. if this is the first NEES-EXTREME adoption of the scope, perform a complete E0-E2 baseline cost inventory; otherwise load the inherited debt/disposition record and audit the affected causal neighborhood.
@@ -65,7 +65,7 @@ A local rule or method failure is **not by itself authority to dismantle an encl
 14. when a locally inferior mechanism enables a larger win, preserve it as a TRADEOFF unless a replacement preserves or improves the enclosing win;
 15. keep local optimization debt visible without treating that debt as permission to break the architecture that currently contains it;
 16. do not stop an E0/E1 optimization solely because the remaining candidate is small or the current implementation is already fast;
-17. remove, cost out, supersede, prove unavoidable, or durably record remaining known avoidable hot-path work.
+17. remove, cost out, supersede, prove unavoidable, or durably record remaining candidate and known-avoidable hot-path work.
 
 ### Qualification boundary
 
@@ -185,7 +185,7 @@ If current primary evidence is unavailable, mark the tactic UNVERIFIED rather th
 ### Machine-cost completion
 
 - What machine work remains after required semantics and constraints are fixed?
-- Which loads/stores, branches, calls, conversions, allocations, synchronization events, copies, or runtime mechanisms are plausibly avoidable?
+- Which loads/stores, branches, calls, conversions, allocations, synchronization events, copies, or runtime mechanisms are candidate costs, and which have actually been established as avoidable?
 - What is the smallest enclosing causal optimization that this operation participates in?
 - Is this local cost standalone, or does it enable/amortize/remove greater cost elsewhere?
 - Would removing the local cost weaken worker utilization, locality, batching, specialization, determinism, coordination amortization, data reuse, or another cross-component advantage?
@@ -255,7 +255,7 @@ If the owner declares a scope NEES-EXTREME, an agent may not silently downgrade 
 
 This does not permit cargo-cult low-level code. NEES-EXTREME requires stronger admission evidence and systematic machine-cost reduction, not more tricks for their own sake. Maximal effort means maximal search and honest disposition, not maximal intervention: an agent MUST NOT apply every plausible method merely to make local metrics look cleaner.
 
-Cost magnitude controls priority, not legitimacy. An agent may defer a small candidate behind a larger structural opportunity, but must not erase the smaller known cost from the optimization record.
+Cost magnitude controls priority, not legitimacy. An agent may defer a small candidate behind a larger structural opportunity, but must not erase the smaller candidate or known avoidable cost from the optimization record.
 
 When a NEES requirement conflicts with semantics, security, or a proven runtime constraint, record a deviation and escalate the decision rather than redefining the goal.
 
