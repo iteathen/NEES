@@ -42,7 +42,7 @@ Normalize at the highest boundary that owns the invariant.
 
 ### Falsifier
 
-If the normalization itself must be repeated because the semantic value can change between uses, or if specialization duplicates enough code to worsen the dominant path, keep the general form.
+If the normalization itself must be repeated because the semantic value can change between uses, or if specialization duplicates enough code to increase total machine cost after code-size/dispatch effects, keep the general form.
 
 ---
 
@@ -254,7 +254,7 @@ Prefer direct indexing for small dense domains.
 
 ### Admission
 
-A numeric recurrence is dominant and a representation transition, boxing event, or conversion is actually part of the cost.
+A numeric recurrence contains a representation transition, boxing event, or conversion that contributes to repeated machine/runtime cost.
 
 ### Method
 
@@ -784,7 +784,7 @@ Evaluate:
 - lifetime/ownership;
 - whether JS result construction remains dominant.
 
-If the work is tiny, crossing may dominate. If result materialization dominates, native arithmetic may not matter.
+If the work is tiny, crossing may dominate. If result materialization dominates, moving arithmetic native may fail to lower total cost; it remains admissible only when the complete boundary economics still win.
 
 ---
 
