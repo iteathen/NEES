@@ -52,6 +52,24 @@ Before adding or strengthening a V8-SENSITIVE, NODE-STABLE, PLATFORM-SENSITIVE, 
 
 Historical sources can explain origin but do not prove current realization.
 
+## Preserve the meaning of EXTREME
+
+NEES-EXTREME means maximal effort to reduce total machine cost after semantics and load-bearing constraints are fixed.
+
+Do not weaken this into:
+
+- optimize only the current bottleneck;
+- ignore changes below an arbitrary percentage threshold;
+- stop because the code is already fast;
+- equate fewer instructions with fewer cycles;
+- require every micro-edit to be independently benchmarked.
+
+Cost magnitude controls priority, not legitimacy.
+
+A normative change that permits known avoidable E0/E1 work to disappear from the optimization record merely because it is small MUST be treated as a semantic weakening of NEES-EXTREME and requires explicit owner direction.
+
+A normative change MAY improve how cost is measured, costed out, superseded, or prioritized without weakening this doctrine.
+
 ## No cargo-cult rules
 
 Do not add rules whose entire justification is one of:
@@ -67,6 +85,8 @@ Do not add rules whose entire justification is one of:
 - Node core does it.
 
 Turn the claim into an explicit mechanism or leave it unverified.
+
+Likewise, do not dismiss an explicit mechanism merely because its expected isolated effect is small. Record it as lower-priority debt until removed, costed out, superseded, proved unavoidable, or deliberately deviated.
 
 ## Incidents and negative results are first-class
 
