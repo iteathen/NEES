@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 
 // Structural checks only: these do not certify semantic conformance or performance.
-const required = ["README.md", "SPEC.md", "NODE_V8_METHODS.md", "CONFORMANCE.md", "AGENT_USAGE.md", "REFERENCES.md"];
+const required = ["README.md", "SPEC.md", "NODE_V8_METHODS.md", "CONFORMANCE.md", "AGENT_USAGE.md", "REFERENCES.md", "RUNTIME_PROFILE_NODE26.md", "STALE_ADVICE.md"];
 for (const file of required) assert.ok(readFileSync(file, 'utf8').trim(), `${file} is empty`);
 const files = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
 const decoder = new TextDecoder('utf-8', { fatal: true });
