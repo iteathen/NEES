@@ -1,4 +1,4 @@
-# NEES Core Specification — Draft 0.2
+# NEES Core Specification — Draft 0.3
 
 ## 1. Purpose
 
@@ -6,9 +6,13 @@ NEES defines a normative execution contract for Node.js/V8 code whose declared o
 
 NEES is not a benchmark standard and it does not assert that conforming code is fast. It defines the implementation discipline that MUST be followed, considered, or explicitly deviated from when a subsystem is declared NEES-conforming.
 
-The central objective is to minimize the complete execution structure between the required semantics and the machine realization, without weakening semantics or turning current-engine folklore into permanent rules.
+The central objective is to minimize the complete execution structure and **total machine cost** between the required semantics and the machine realization, without weakening semantics or turning current-engine folklore into permanent rules.
 
-Performance qualification remains separate.
+For **NEES-EXTREME**, "fast enough" is not a stopping criterion. After required semantics, safety, lifecycle, resource, and deployment constraints are fixed, every known avoidable E0-E2 cost remains an optimization target until it is removed, shown to reduce greater cost elsewhere, shown unavoidable on the selected realization, qualified as no better than the retained form, or explicitly carried as optimization debt/deviation.
+
+The objective is minimum realizable machine cost, not minimum source lines or minimum instruction count in isolation. A realization with more instructions may be better when it reduces critical dependency depth, memory traffic, cache/TLB misses, branch misses, boxing/conversion, allocation/GC, synchronization/coherence, runtime dispatch, native-boundary cost, or other stall cycles.
+
+Performance qualification remains separate. NEES does not claim mathematical proof of a globally optimal program; it requires systematic maximal-effort treatment of known and reasonably discoverable hot-path cost.
 
 ## 2. Normative language
 
@@ -143,11 +147,11 @@ Hashes, slots, object identity, process-local IDs, worker ownership, occurrence 
 
 Addressing machinery MAY narrow lookup. Authoritative equality remains owned by the semantic key.
 
-### NEES-CORE-004 — Optimize the dominant boundary, not the convenient instruction [STABLE]
+### NEES-CORE-004 — Optimize the dominant boundary first, without exempting smaller costs [STABLE]
 
 A local operation SHOULD NOT be optimized merely because it is easy to rewrite.
 
-Before a substantial E0-E2 optimization, identify whether the dominant cost is:
+Before a substantial E0-E2 optimization, identify whether the largest currently known cost is:
 
 - computation;
 - allocation or retention;
@@ -159,7 +163,96 @@ Before a substantial E0-E2 optimization, identify whether the dominant cost is:
 - I/O or external latency;
 - JIT compilation/deoptimization.
 
-If the proposed method cannot affect the dominant cost, it requires a narrower justification.
+The largest cost normally determines **priority**, not whether smaller avoidable costs count. A proposed method that does not affect the largest cost remains a legitimate NEES-EXTREME target when it has a concrete mechanism for lowering total machine cost and does not obstruct a higher-value structural change.
+
+### NEES-XTRM-001 — Minimize total machine cost [STABLE]
+
+For E0-E2 code declared **NEES-EXTREME**, the governing objective is the lowest realizable total machine cost on the selected runtime/platform profile, subject to required semantics and independently load-bearing constraints.
+
+The cost model includes, where applicable:
+
+- executed/retired work;
+- critical dependency depth and pipeline stalls;
+- loads, stores and memory traffic;
+- cache and TLB working-set behavior;
+- branches, prediction and misprediction;
+- allocation, initialization, write barriers and garbage collection;
+- boxing, coercion and representation conversion;
+- call, dispatch, inlining and deoptimization machinery;
+- synchronization, Atomics, cache-coherence traffic and wakeups;
+- serialization, cloning, copying and transport;
+- JS/native/WASM/FFI crossing and marshalling;
+- required product materialization.
+
+No one metric is automatically authoritative. The target is total execution cost.
+
+### NEES-XTRM-002 — Presume observed avoidable work is optimization debt [STABLE]
+
+Within a NEES-EXTREME E0-E2 scope, an observed operation, representation, memory access, allocation, conversion, branch, call, synchronization event, materialization, or runtime mechanism MUST NOT be retained merely because it is conventional, readable, idiomatic, already fast, individually small, or not currently dominant.
+
+It is considered resolved only when at least one of these is established:
+
+1. it is required by semantics;
+2. it is required by safety, lifecycle, ownership, resource, ABI, permission, or deployment constraints;
+3. retaining it reduces greater total machine cost elsewhere;
+4. it is unavoidable under the selected Node/V8/platform realization;
+5. a qualified alternative has equal or greater total machine cost;
+6. it has been removed or structurally superseded;
+7. it is explicitly recorded as unresolved optimization debt or a deviation.
+
+### NEES-XTRM-003 — Cost magnitude controls priority, not legitimacy [STABLE]
+
+A known avoidable E0/E1 cost does not cease to be an optimization target because its isolated effect is small or because another bottleneck is larger.
+
+Projects SHOULD attack higher-leverage costs first, but smaller known costs MUST remain visible until resolved, disproven, superseded, or explicitly deferred.
+
+A threshold such as "less than 1%" MAY be used to prioritize work. It MUST NOT be used as a general rule that the cost is irrelevant.
+
+### NEES-XTRM-004 — Optimize cycles and critical path, not instruction count alone [STABLE]
+
+NEES-EXTREME does not equate fewer source operations or fewer machine instructions with fewer elapsed cycles.
+
+A realization MAY intentionally execute more instructions when doing so lowers total execution time or resource cost through effects such as:
+
+- fewer dependent loads;
+- lower latency on the critical path;
+- better cache/TLB locality;
+- fewer branch misses;
+- more instruction-level parallelism;
+- fewer allocations or GC interactions;
+- less synchronization/coherence traffic;
+- cheaper runtime representations.
+
+Instruction count is evidence only for the cost it actually represents.
+
+### NEES-XTRM-005 — No "fast enough" stopping condition [STABLE]
+
+A NEES-EXTREME optimization pass may stop only because:
+
+- no further justified improvement is presently known after the required review;
+- remaining observed work is required or currently unavoidable;
+- qualified alternatives do not reduce total machine cost;
+- a larger structural change supersedes the local target;
+- the owner explicitly defers unresolved optimization debt.
+
+Owner deferral does not convert known avoidable work into required work. If a known avoidable E0/E1 cost is deliberately retained, the conformance record MUST preserve it as debt and, where it conflicts with a MUST/MUST NOT requirement, as an explicit deviation.
+
+"Already fast", "not the bottleneck", "too small to matter", "idiomatic", and "cleaner" are not stopping reasons by themselves.
+
+### NEES-XTRM-006 — Maximal effort is not a claim of global optimality [STABLE]
+
+NEES-EXTREME requires systematic search for and disposition of known and reasonably discoverable avoidable machine cost. It does not require a proof that no faster program can exist.
+
+Conformance therefore means:
+
+```text
+no known avoidable hot-path work silently ignored
++ explicit treatment of unresolved cost
++ current-runtime evidence for realization-sensitive choices
++ continued eligibility of small exact improvements
+```
+
+It does not mean "globally optimal machine code has been mathematically proved".
 
 ## 6. Boundary discipline
 
