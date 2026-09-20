@@ -114,7 +114,7 @@ Crossing, marshalling, copying, lifetime management, and returning results to Ja
 
 A MySQL2 parser investigation rejected WASM because the dominant remaining costs were JS materialization and GC rather than protocol arithmetic.
 
-**Use instead:** M31 native-boundary decision and M43 dominant-cost analysis.
+**Use instead:** M31 native-boundary decision, M43 boundary-first analysis, and the NEES-EXTREME total-machine-cost doctrine.
 
 ## 13. "A custom Buffer pool is automatically faster"
 
@@ -122,7 +122,7 @@ A MySQL2 parser investigation rejected WASM because the dominant remaining costs
 
 Node already pools many small unsafe Buffer allocations. Custom pools also create ownership hazards when downstream async operations retain or alias buffers.
 
-Use a custom pool only when the existing allocator is actually material and reuse has a safe lifetime protocol.
+Use a custom pool only when reuse lowers total machine cost after allocation, retention, reset, aliasing and GC effects are accounted for, and the lifetime protocol is safe.
 
 Primary source: [Buffer](https://nodejs.org/api/buffer.html).
 
