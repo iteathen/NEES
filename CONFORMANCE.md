@@ -149,7 +149,7 @@ The affected hot-path review uses these dispositions:
 - **COSTED-OUT** — a qualified alternative is equal or worse in total machine cost.
 - **REMOVED** — eliminated by the completed change.
 - **SUPERSEDED** — eliminated because a structural change removes the mechanism.
-- **UNVERIFIED-DEBT** — a plausible avoidable cost remains unresolved.
+- **UNVERIFIED-DEBT** — a plausible candidate cost remains unresolved or its causal role is unqualified.
 - **DEVIATION** — known avoidable cost is deliberately retained.
 
 The following are not valid dispositions:
