@@ -66,6 +66,8 @@ Do not weaken this into:
 
 Cost magnitude controls priority, not legitimacy.
 
+Maximal effort governs search coverage and disposition, not mandatory intervention. A detector finding or locally cheaper form is not sufficient authority to mutate an enclosing optimization; the agent must establish causal role and the governing optimization unit first.
+
 First-time NEES-EXTREME adoption requires a complete declared hot-scope baseline audit. Subsequent work inherits the resulting debt/disposition record and should not be forced to repeat the whole audit unless the scope or assumptions materially change.
 
 A normative change that permits known avoidable E0/E1 work to disappear from the optimization record merely because it is small MUST be treated as a semantic weakening of NEES-EXTREME and requires explicit owner direction.
