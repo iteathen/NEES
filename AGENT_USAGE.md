@@ -1,4 +1,4 @@
-# NEES Agent Usage Contract — Draft 0.2
+# NEES Agent Usage Contract — Draft 0.3
 
 ## 1. Manager invocation
 
@@ -36,7 +36,9 @@ before designing E0-E2 implementation changes.
 8. state admission condition and falsifier for each realization-sensitive method;
 9. identify capacity/lifetime/failure behavior;
 10. identify runtime/platform assumptions;
-11. check the stale-advice firewall for the proposed tactic.
+11. check the stale-advice firewall for the proposed tactic;
+12. inventory the affected E0-E2 machine-cost neighborhood: calls, branches, loads/stores, allocations, conversions, dispatch, synchronization, transport, and runtime machinery;
+13. identify known or suspected avoidable costs even when they are smaller than the current dominant bottleneck.
 
 ### During implementation
 
@@ -50,13 +52,17 @@ before designing E0-E2 implementation changes.
 8. avoid stacking unrelated speculative optimizations into one causal experiment unless structural synthesis is the requested objective;
 9. continue through the coherent optimization without stopping after each edited line/helper to run the full test suite, benchmark matrix, profiler, or generated-code inspection;
 10. checkpoint reasoning and durable progress regularly;
-11. run a targeted development check when its result can change the next design decision, falsify a premise, or establish a correctness invariant required for continued work.
+11. run a targeted development check when its result can change the next design decision, falsify a premise, or establish a correctness invariant required for continued work;
+12. do not stop an E0/E1 optimization solely because the remaining candidate is small or the current implementation is already fast;
+13. remove, cost out, supersede, prove unavoidable, or durably record remaining known avoidable hot-path work.
 
 ### Qualification boundary
 
 The default qualification unit is the coherent completed pull request or equivalent complete change set.
 
 At that boundary, run the applicable correctness, NEES conformance, structural detector, runtime/JIT, performance, regression, and negative-control work required by the project.
+
+For NEES-EXTREME, also perform the maximal-effort cost audit over the affected E0-E2 causal neighborhood and report unresolved optimization debt.
 
 Reuse inherited runtime-profile and previously qualified method evidence unless the change crosses an admission boundary or requalification trigger.
 
@@ -83,6 +89,7 @@ Concurrency/transport:
 Capacity/failure:
 Falsifier:
 Deviations:
+Remaining optimization debt:
 Unresolved realization questions:
 ```
 
@@ -157,6 +164,16 @@ If current primary evidence is unavailable, mark the tactic UNVERIFIED rather th
 - Is worker creation/transport amortized?
 - Is payload ownership shared, transferred, cloned, copied, or indexed?
 
+### Machine-cost completion
+
+- What machine work remains after required semantics and constraints are fixed?
+- Which loads/stores, branches, calls, conversions, allocations, synchronization events, copies, or runtime mechanisms are plausibly avoidable?
+- Is a retained operation required, a tradeoff that removes greater cost, unavoidable on the selected profile, costed out against an alternative, or unresolved debt?
+- Does a candidate reduce total cycles/critical-path cost even if it increases instruction count?
+- Are we ignoring a known cost only because another bottleneck is larger?
+- Have small exact opportunities been preserved for later rather than silently discarded?
+- Is "fast enough" being used as an unstated stopping rule?
+
 ### Native/builtin boundary
 
 - Is there an existing Node/V8 builtin that performs the primitive directly?
@@ -188,6 +205,9 @@ Agents MUST NOT justify an E0-E2 implementation with only:
 - "the hash is unique enough";
 - "the object is small";
 - "it allocates only once per node/task";
+- "this is already fast enough";
+- "that is not the bottleneck";
+- "that improvement is too small to matter";
 - "Node core does this" without identifying why.
 
 The implementation argument must name the semantic boundary and actual execution structure removed or preserved.
@@ -207,7 +227,9 @@ If a source predates major compiler architecture changes and no current confirma
 
 If the owner declares a scope NEES-EXTREME, an agent may not silently downgrade it to maintainability-first or idiomatic-JS-first implementation because stricter analysis is inconvenient.
 
-This does not permit cargo-cult low-level code. NEES-EXTREME requires stronger admission evidence, not more tricks.
+This does not permit cargo-cult low-level code. NEES-EXTREME requires stronger admission evidence and systematic machine-cost reduction, not more tricks for their own sake.
+
+Cost magnitude controls priority, not legitimacy. An agent may defer a small candidate behind a larger structural opportunity, but must not erase the smaller known cost from the optimization record.
 
 When a NEES requirement conflicts with semantics, security, or a proven runtime constraint, record a deviation and escalate the decision rather than redefining the goal.
 
