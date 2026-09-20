@@ -61,6 +61,25 @@ For E0/E1 changes, a V8-SENSITIVE or PLATFORM-SENSITIVE method MUST also state a
 
 "Lower level", "native", "typed", "branchless", "monomorphic", "preallocated", and "lock-free" are not mechanisms by themselves.
 
+### NEES-EVID-004 — Qualify coherent changes, not individual edits [STABLE]
+
+The default qualification unit for NEES implementation work is a **coherent completed pull request or equivalent complete change set**, not each edited line, helper, method application, or local optimization.
+
+NEES MUST NOT require repeated full correctness suites, benchmarks, profiles, generated-code inspection, negative controls, or runtime qualification solely because another optimized line was written.
+
+During development:
+
+- inherited evidence from the selected runtime profile and previously qualified NEES methods MAY be reused;
+- semantic derivation, representation accounting, source inspection, and other development evidence SHOULD guide continued implementation;
+- targeted checks SHOULD be run when their result can change the next design decision, prevent continued work on an invalid premise, or establish a correctness invariant needed for further work;
+- agents SHOULD checkpoint reasoning and durable progress without treating each checkpoint as a qualification gate.
+
+Before promotion or merge, the completed qualification unit MUST receive the applicable project-required correctness, NEES conformance, structural, runtime/JIT, and performance qualification.
+
+A method already qualified for the active runtime/profile does not require fresh microqualification at every application unless the change crosses that method's admission boundary or requalification trigger.
+
+The qualification boundary SHOULD preserve a coherent structural optimization. It SHOULD NOT force useful architecture changes into tiny patches merely so each micro-delta is independently measurable.
+
 ## 4. Execution classes
 
 Every NEES scope MUST declare an execution class.

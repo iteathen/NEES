@@ -76,6 +76,14 @@ Projects SHOULD record the exact `process.version`, `process.versions.v8`, OS, a
 
 Additional profiles can be added without weakening the stable core.
 
+## Qualification cadence
+
+NEES is designed to support aggressive coherent optimization without turning development into a benchmark after every edit.
+
+The default qualification unit is a completed coherent pull request or equivalent change set. During development, agents reuse inherited runtime/method evidence and run targeted checks only when the result can change the next implementation decision or protect a required correctness invariant.
+
+Full correctness, conformance, structural, runtime/JIT, and performance qualification is performed at the promotion boundary as applicable.
+
 ## Automated checks
 
 The `verify` check runs on pull requests and pushes to main and release branches.

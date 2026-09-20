@@ -139,7 +139,55 @@ An agent changing E0-E2 code MUST report the changed operation in terms of:
 
 This explanation is required even when no wall-clock benchmark is run.
 
-## 8. Evidence hierarchy
+## 8. Evidence phases and qualification boundary
+
+NEES distinguishes three evidence phases.
+
+### Inherited evidence
+
+Evidence already established by:
+
+- the selected runtime profile;
+- a previously qualified NEES method;
+- an unchanged semantic invariant;
+- a previously qualified project-local realization record.
+
+Inherited evidence MAY be reused until a stated requalification trigger is crossed.
+
+### Development evidence
+
+Evidence used to choose and continue implementation:
+
+- semantic derivation;
+- source and representation inspection;
+- complexity reasoning;
+- known runtime-profile facts;
+- focused counters or checks run because their answer changes the next design step.
+
+Development evidence is not required to include a full benchmark, full regression suite, generated-code audit, or negative-control experiment after every edit.
+
+### Qualification evidence
+
+Evidence gathered to decide whether the completed change is promotable.
+
+The default qualification unit is a coherent completed pull request or equivalent complete change set.
+
+Before promotion, the qualification unit MUST receive the applicable project-required:
+
+- semantic/correctness qualification;
+- NEES conformance review;
+- structural/deterministic detectors;
+- runtime/JIT evidence when a realization claim is load-bearing;
+- performance qualification when the project requires a performance claim or gate;
+- regression and negative controls where they are material to the claim.
+
+NEES MUST NOT require those full qualification activities after every optimized line, helper, or individual method application.
+
+A targeted development check is encouraged when its result can falsify a premise or alter the next implementation decision. Ritual testing that cannot affect the next decision is not a NEES requirement.
+
+The qualification unit SHOULD be structurally coherent. Do not split one architectural optimization into artificially tiny patches solely to make each intermediate delta independently measurable.
+
+## 9. Evidence hierarchy
 
 When sources disagree, use this order unless there is a documented reason not to:
 
@@ -152,9 +200,11 @@ When sources disagree, use this order unless there is a documented reason not to
 
 A newer secondary source does not override a primary source merely because it is newer. Conversely, an old primary implementation article may no longer describe current realization. State the mismatch.
 
-## 9. Negative controls and falsification
+## 10. Negative controls and falsification
 
-A performance claim is stronger when the observation mechanism is shown to see the property under test.
+At the qualification boundary, a performance claim is stronger when the observation mechanism is shown to see the property under test.
+
+Negative controls and falsification are qualification tools; NEES does not require recreating them after each development edit.
 
 For a structural detector:
 
@@ -170,7 +220,7 @@ For a V8/JIT claim:
 
 - verify the relevant function/path actually reaches the assumed optimized state when that assumption is load-bearing.
 
-## 10. Deterministic detectors
+## 11. Deterministic detectors
 
 Projects SHOULD convert recurring NEES failures into deterministic checks where practical.
 
@@ -190,7 +240,7 @@ Examples:
 
 A deterministic detector is evidence only for the property it observes.
 
-## 11. Incident learning
+## 12. Incident learning
 
 When a material performance defect is traced to a recurring implementation shape, the owning project SHOULD produce at least one of:
 
@@ -203,7 +253,7 @@ When a material performance defect is traced to a recurring implementation shape
 
 This keeps NEES grounded in lived failures rather than generic folklore.
 
-## 12. Runtime revisions
+## 13. Runtime revisions
 
 A Node/V8 major change does not invalidate STABLE rules.
 
@@ -215,7 +265,7 @@ An experimental Node API version change triggers review of methods that depend o
 
 Projects SHOULD record the exact production runtime tuple when performance is release-critical.
 
-## 13. Conformance levels
+## 14. Conformance levels
 
 ### NEES-CORE
 
@@ -231,7 +281,7 @@ NEES-NODE plus all applicable E0/E1 allocation, representation, JIT stability, c
 
 NEES-EXTREME does not mean "use every low-level technique". It means every applicable low-level decision is explicit and evidence-gated.
 
-## 14. Non-goals
+## 15. Non-goals
 
 NEES does not require:
 
