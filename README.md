@@ -80,7 +80,7 @@ It means that E0/E1 implementation decisions are explicit: the agent names the s
 
 ## Current reference profile
 
-Draft 0.2 currently ships one reference realization profile:
+Draft 0.3 currently uses one reference realization profile:
 
 - **Node 26 / V8 14.6 family** — [RUNTIME_PROFILE_NODE26.md](RUNTIME_PROFILE_NODE26.md)
 
