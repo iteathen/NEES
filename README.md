@@ -64,6 +64,8 @@ NEES-EXTREME therefore has no "fast enough" stopping condition. Work stops becau
 
 This is **not** a claim that global optimality has been mathematically proved. It is a requirement that known and reasonably discoverable hot-path costs are not silently ignored.
 
+The first NEES-EXTREME adoption of a scope performs a complete E0-E2 baseline cost audit. Later PRs inherit that debt/disposition record and re-audit only the affected causal neighborhood and any invalidated assumptions.
+
 ## What NEES-EXTREME does not mean
 
 It does not mean:
