@@ -1,4 +1,4 @@
-# NEES Stale-Advice Firewall — Draft 0.2
+# NEES Stale-Advice Firewall — Draft 0.3
 
 This document records common performance statements that MUST NOT be treated as unconditional NEES rules.
 
@@ -169,3 +169,32 @@ A new entry SHOULD be added when:
 - a Node/V8 release changes a load-bearing assumption.
 
 The correction SHOULD point to the replacement NEES method, not merely say "benchmark it".
+
+
+## 18. "It is not the bottleneck, so it is not worth optimizing"
+
+**NEES stance:** false for NEES-EXTREME.
+
+The largest known cost normally determines optimization priority, but it does not make smaller known avoidable E0/E1 work disappear.
+
+A small exact improvement remains valid optimization debt until it is:
+
+- removed;
+- structurally superseded;
+- shown required or unavoidable;
+- costed out against an equal/worse alternative;
+- or explicitly deferred/deviated.
+
+Likewise, an arbitrary threshold such as 1% may be useful for scheduling engineering effort, but it is not a semantic rule that sub-threshold machine cost is irrelevant.
+
+**Use instead:** NEES-XTRM-001 through XTRM-006, M45 maximal-effort cost audit, and M46 critical-path machine-cost analysis.
+
+## 19. "Fewer instructions means faster"
+
+**NEES stance:** false as a general rule.
+
+Instruction count is one cost signal. More instructions can reduce elapsed cycles when they remove dependent loads, branch misses, cache/TLB misses, synchronization, boxing/conversion, GC pressure, marshalling, or other stalls.
+
+Conversely, fewer instructions can be slower when they increase serial dependency or memory latency.
+
+**Use instead:** M46 and target-profile evidence for the actual critical path.
