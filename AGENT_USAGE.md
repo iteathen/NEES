@@ -38,7 +38,8 @@ before designing E0-E2 implementation changes.
 10. identify runtime/platform assumptions;
 11. check the stale-advice firewall for the proposed tactic;
 12. inventory the affected E0-E2 machine-cost neighborhood: calls, branches, loads/stores, allocations, conversions, dispatch, synchronization, transport, and runtime machinery;
-13. identify known or suspected avoidable costs even when they are smaller than the current dominant bottleneck.
+13. identify known or suspected avoidable costs even when they are smaller than the current dominant bottleneck;
+14. if this is the first NEES-EXTREME adoption of the scope, perform a complete E0-E2 baseline cost inventory; otherwise load the inherited debt/disposition record and audit the affected causal neighborhood.
 
 ### During implementation
 
