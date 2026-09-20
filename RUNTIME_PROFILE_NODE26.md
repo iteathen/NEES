@@ -1,7 +1,7 @@
 # NEES Runtime Profile — Node.js 26 / V8 14.6 family
 
 **Profile ID:** `node26-v8-14.6`  
-**Status:** Draft 0.2 reference profile  
+**Status:** Draft 0.3 reference profile  
 **Last research pass:** 2026-09-20  
 **Target baseline:** Node.js 26.x; exact projects SHOULD record `process.version`, `process.versions.v8`, OS, and architecture.
 

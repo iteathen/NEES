@@ -1,6 +1,6 @@
 # NEES — Node Extreme Execution Standard
 
-**Status:** Draft 0.2 — active research draft  
+**Status:** Draft 0.3 — active research draft  
 **Scope:** Node.js / V8 extreme-performance implementation intent  
 **Authority:** experimental; projects opt in explicitly  
 **Measurement policy:** performance qualification is separate from conformance
@@ -23,7 +23,7 @@ and give a human or coding agent a precise implementation contract for represent
 6. Use [AGENT_USAGE.md](AGENT_USAGE.md) when directing coding agents.
 7. Consult [REFERENCES.md](REFERENCES.md) for the research/source map.
 
-The Draft 0.2 research reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md).
+The Draft 0.2 runtime-grounding reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md). Draft 0.3's maximal-effort rationale is preserved at [research/2026-09-20-maximal-effort-doctrine.md](research/2026-09-20-maximal-effort-doctrine.md).
 
 ## Governing idea
 
@@ -52,6 +52,20 @@ NEES deliberately separates three layers:
 
 That separation is a core feature. NEES is intended to be strict without fossilizing stale V8 folklore.
 
+## What NEES-EXTREME means
+
+NEES-EXTREME is a **maximal-effort machine-cost discipline**.
+
+After semantics and load-bearing constraints are fixed, the goal is to minimize total realizable machine cost across the hot execution: computation, critical-path dependency depth, memory traffic, cache/TLB behavior, branches, allocation/GC, boxing/conversion, runtime dispatch, synchronization/coherence, transport, and boundary crossing.
+
+A small known avoidable E0/E1 cost remains a valid optimization target. A larger bottleneck normally gets attention first, but "not the bottleneck", "too small to matter", and "already fast enough" do not erase the smaller cost.
+
+NEES-EXTREME therefore has no "fast enough" stopping condition. Work stops because no further justified improvement is presently known, the remaining structure is required/unavoidable, alternatives have been costed out, a structural successor supersedes the local target, or unresolved work is explicitly retained as optimization debt/deviation.
+
+This is **not** a claim that global optimality has been mathematically proved. It is a requirement that known and reasonably discoverable hot-path costs are not silently ignored.
+
+The first NEES-EXTREME adoption of a scope performs a complete E0-E2 baseline cost audit. Later PRs inherit that debt/disposition record and re-audit only the affected causal neighborhood and any invalidated assumptions.
+
 ## What NEES-EXTREME does not mean
 
 It does not mean:
@@ -64,11 +78,11 @@ It does not mean:
 - use native code, WebAssembly, or FFI whenever possible;
 - write branchless source code.
 
-It means that E0/E1 implementation decisions are explicit: the agent names the semantic boundary, execution mechanism, admission condition, falsifier, ownership/lifetime behavior, and runtime assumptions.
+It means that E0/E1 implementation decisions are explicit: the agent names the semantic boundary, execution mechanism, admission condition, falsifier, ownership/lifetime behavior, runtime assumptions, machine-cost effect, and any remaining optimization debt.
 
 ## Current reference profile
 
-Draft 0.2 currently ships one reference realization profile:
+Draft 0.3 currently uses one reference realization profile:
 
 - **Node 26 / V8 14.6 family** — [RUNTIME_PROFILE_NODE26.md](RUNTIME_PROFILE_NODE26.md)
 

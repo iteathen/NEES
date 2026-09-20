@@ -1,4 +1,4 @@
-# NEES Draft 0.2 — Research and Source Map
+# NEES Draft 0.3 — Research and Source Map
 
 NEES separates **primary runtime authorities**, **current production evidence**, and **secondary guidance**. No single source is treated as authority for the whole standard.
 
@@ -179,3 +179,20 @@ stable execution invariants
 ```
 
 It is intended to be useful for solvers, parsers, runtimes, schedulers, codecs, databases, protocol engines, serializers, validators, and other compute-intensive Node systems.
+
+
+## 8. Draft 0.3 maximal-effort doctrine
+
+Internal rationale:
+
+- [research/2026-09-20-maximal-effort-doctrine.md](research/2026-09-20-maximal-effort-doctrine.md)
+
+Draft 0.3 changes the meaning of NEES-EXTREME from merely strict hot-path discipline to an explicit **maximal-effort total-machine-cost objective**.
+
+This doctrinal revision adds no new Node/V8 factual claims. It clarifies how existing evidence is consumed:
+
+- bottleneck size determines priority, not whether a known avoidable cost counts;
+- "fast enough" is not a stopping condition;
+- instruction count is a partial signal rather than the objective;
+- unresolved small costs remain durable optimization debt;
+- qualification remains PR-level rather than per-edit.

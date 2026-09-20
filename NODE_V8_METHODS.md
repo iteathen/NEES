@@ -1,4 +1,4 @@
-# NEES Node/V8 Realization Methods — Draft 0.2
+# NEES Node/V8 Realization Methods — Draft 0.3
 
 This document is the prescriptive realization layer for NEES.
 
@@ -42,7 +42,7 @@ Normalize at the highest boundary that owns the invariant.
 
 ### Falsifier
 
-If the normalization itself must be repeated because the semantic value can change between uses, or if specialization duplicates enough code to worsen the dominant path, keep the general form.
+If the normalization itself must be repeated because the semantic value can change between uses, or if specialization duplicates enough code to increase total machine cost after code-size/dispatch effects, keep the general form.
 
 ---
 
@@ -53,7 +53,7 @@ If the normalization itself must be repeated because the semantic value can chan
 
 ### Admission
 
-A dominant function/property/call site is sensitive to changing runtime type, shape, elements kind, or call-target feedback.
+A repeated function/property/call site has changing runtime type, shape, elements-kind, or call-target feedback that may add machine/runtime cost.
 
 ### Method
 
@@ -69,7 +69,9 @@ The target is **stable, bounded feedback**, not monomorphism for its own sake.
 
 ### Falsifier
 
-If the site is not dominant, remains stably optimized, or the split increases code size/dispatch enough to regress the workload, do not specialize further.
+Do not specialize further when the split fails to reduce total machine cost, for example because added code size, dispatch, i-cache pressure, or lost optimization outweighs the removed feedback cost.
+
+If the site is not currently dominant, that lowers its priority; it does not by itself prove that an exact cheaper realization is irrelevant under NEES-EXTREME.
 
 ---
 
@@ -80,7 +82,7 @@ If the site is not dominant, remains stably optimized, or the split increases co
 
 ### Admission
 
-Objects are semantically appropriate and hot property access is material.
+Objects are semantically appropriate and repeated property access is part of the hot execution cost.
 
 ### Method
 
@@ -103,7 +105,7 @@ Field value representation matters separately from property shape.
 
 ### Falsifier
 
-If object/property access is not material, or a fixed indexed representation would create more conversion work than it removes, keep the simpler object representation.
+Keep the simpler object representation when a fixed indexed representation would create equal or greater total machine cost after conversion, locality, allocation, and access effects are accounted for. A small expected saving may be lower priority, but it is not rejected solely for being small.
 
 ---
 
@@ -252,7 +254,7 @@ Prefer direct indexing for small dense domains.
 
 ### Admission
 
-A numeric recurrence is dominant and a representation transition, boxing event, or conversion is actually part of the cost.
+A numeric recurrence contains a representation transition, boxing event, or conversion that contributes to repeated machine/runtime cost.
 
 ### Method
 
@@ -343,7 +345,7 @@ Do not preserve the old allocation merely because an object is small.
 
 ### Admission
 
-The resource is expensive to create/initialize, reuse avoids material work, and ownership has a clear release point.
+The resource has reusable creation/initialization/lifetime cost, reuse lowers total machine cost, and ownership has a clear release point.
 
 Good candidates may include:
 
@@ -502,9 +504,9 @@ Do not normalize, canonicalize, allocate, encode, hash, or schedule state that a
 ### for-of / forEach may remain when
 
 - current V8 optimizes the actual collection path adequately;
-- no material callback/allocation cost matters;
+- no net avoidable callback/iterator/allocation cost has been established for the actual path;
 - semantic/tamper-resistance requirements permit the iterator machinery;
-- rewriting does not remove meaningful work.
+- the proposed rewrite does not lower total machine cost.
 
 ### map/filter/reduce
 
@@ -782,7 +784,7 @@ Evaluate:
 - lifetime/ownership;
 - whether JS result construction remains dominant.
 
-If the work is tiny, crossing may dominate. If result materialization dominates, native arithmetic may not matter.
+If the work is tiny, crossing may dominate. If result materialization dominates, moving arithmetic native may fail to lower total cost; it remains admissible only when the complete boundary economics still win.
 
 ---
 
@@ -795,7 +797,7 @@ When a project needs a compiled addon and ABI stability across Node releases mat
 
 Keep native state in native storage when that is semantically appropriate; avoid bouncing fine-grained values through the JS/native boundary repeatedly.
 
-Batch operations when crossing cost is material.
+Batch operations whenever batching lowers total crossing/marshalling cost without violating latency or semantic constraints.
 
 Use direct V8/Node APIs only when the project deliberately accepts version coupling for capabilities/performance unavailable through Node-API.
 
@@ -808,7 +810,7 @@ Use direct V8/Node APIs only when the project deliberately accepts version coupl
 
 A Fast API callback is admitted when:
 
-- native call overhead is material relative to function body;
+- native call overhead occurs frequently enough that the fast signature can lower total machine cost after code-size and fallback effects;
 - hot arguments fit a fast signature;
 - the JS caller reaches optimized code;
 - a conventional slow implementation remains correct.
@@ -1052,25 +1054,28 @@ Standalone pre-generated code can remove runtime `Function`/eval requirements wh
 
 ---
 
-## M43 — Stop optimizing below an unavoidable materialization boundary
+## M43 — Attack unavoidable product/materialization boundaries before subdominant work
 
 **Applies:** all  
 **Stability:** STABLE
 
-If the semantic result requires expensive JS strings, Dates, object graphs, copies, or external I/O, identify whether those costs dominate.
+If the semantic result requires expensive JS strings, Dates, object graphs, copies, or external I/O, identify whether those costs currently dominate.
 
-Do not move arithmetic to native/WASM or micro-optimize a parser if every result still pays the same dominant materialization cost.
+First ask whether the boundary itself can be reduced without changing required semantics:
 
-Instead consider:
+- return a narrower representation when the API permits;
+- stream instead of retaining;
+- materialize lazily;
+- avoid unused fields;
+- batch the boundary;
+- move conversion to a less frequent owner;
+- eliminate duplicate copies or encodings.
 
-- returning a different representation when API semantics permit;
-- streaming instead of retaining;
-- lazy materialization;
-- avoiding unused fields;
-- batching the boundary;
-- leaving irreducible product cost alone.
+If the boundary is irreducible, it remains required product cost.
 
-This is the antidote to locally impressive but end-to-end irrelevant optimizations.
+Its dominance sets optimization priority; it does **not** make smaller known avoidable E0/E1 costs cease to exist. After the dominant boundary is reduced or shown irreducible, continue treating smaller avoidable costs according to the NEES-EXTREME debt rules.
+
+Do not move arithmetic to native/WASM merely because the arithmetic looks optimizable when the crossing and unchanged materialization make total machine cost worse.
 
 ---
 
@@ -1106,3 +1111,73 @@ Examples of requalification triggers:
 - workload moves the dominant cost elsewhere.
 
 Do not let a successful local trick become an undocumented universal rule.
+
+
+---
+
+## M45 — Perform a maximal-effort hot-path cost audit
+
+**Applies:** NEES-EXTREME E0-E2  
+**Stability:** STABLE
+
+At first NEES-EXTREME adoption, inspect the **complete declared E0-E2 hot scope** from semantic requirement through runtime/machine realization.
+
+After a baseline audit exists, each coherent qualification boundary inspects the affected hot execution plus inherited debt whose assumptions were touched or invalidated.
+
+For each repeated operation or mechanism reasonably visible in the affected neighborhood, consider:
+
+```text
+semantic operation
+source/runtime realization
+calls / dispatch
+branches / dependency chain
+loads / stores / memory traffic
+allocation / lifetime / GC
+boxing / conversions
+hashing / probing / scans
+synchronization / coherence
+transport / copies
+native or builtin boundary
+generated-code/runtime behavior when load-bearing
+```
+
+Disposition each known cost as one of:
+
+- **REQUIRED** — semantics or load-bearing constraint requires it;
+- **TRADEOFF** — retained because it reduces greater total machine cost elsewhere;
+- **UNAVOIDABLE-PROFILE** — current Node/V8/platform realization makes it unavoidable;
+- **COSTED-OUT** — a qualified alternative is equal or worse in total machine cost;
+- **REMOVED** — eliminated;
+- **SUPERSEDED** — a structural change removes the mechanism;
+- **UNVERIFIED-DEBT** — plausible avoidable cost remains unqualified;
+- **DEVIATION** — known avoidable cost deliberately retained under the deviation process.
+
+Do not classify a cost as NOT-APPLICABLE merely because its measured or expected isolated effect is small.
+
+After the initial baseline, the audit scope is the affected causal neighborhood of the coherent change, not a demand to re-audit the entire program after every line edit. Existing durable debt remains inherited until resolved or requalified.
+
+---
+
+## M46 — Optimize critical-path cycles, not a single proxy metric
+
+**Applies:** NEES-EXTREME E0-E2  
+**Stability:** STABLE / PLATFORM-SENSITIVE when hardware details are load-bearing
+
+Use instruction count, branch count, allocation count, cache misses, Atomics count, wall time, CPU time, generated code size, and similar measurements as **partial cost signals**, not independent goals.
+
+A candidate with more instructions MAY be superior when it lowers elapsed machine cycles by reducing:
+
+- serial dependency depth;
+- cache/TLB misses;
+- load-to-use latency;
+- branch mispredictions;
+- boxing/conversion;
+- allocation or GC;
+- coherence traffic;
+- synchronization/wakeup latency;
+- JS/native marshalling;
+- other pipeline stalls.
+
+Conversely, a candidate with fewer source operations or fewer retired instructions is not promoted if total execution cost is worse.
+
+When hardware counters are unavailable, mark the missing dimension as uncertainty rather than assuming it is zero.
