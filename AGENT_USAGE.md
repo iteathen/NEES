@@ -1,4 +1,4 @@
-# NEES Agent Usage Contract — Draft 0.3
+# NEES Agent Usage Contract — Draft 0.4
 
 ## 1. Manager invocation
 
@@ -91,6 +91,9 @@ Report:
 Semantic owner:
 NEES class:
 Runtime profile:
+Governing optimization unit:
+Causal role: STANDALONE | ENABLING | COUPLED | UNKNOWN
+Regression surface:
 Rules/methods applied:
 Mechanism class:
 Admission:
@@ -250,7 +253,7 @@ If a source predates major compiler architecture changes and no current confirma
 
 If the owner declares a scope NEES-EXTREME, an agent may not silently downgrade it to maintainability-first or idiomatic-JS-first implementation because stricter analysis is inconvenient.
 
-This does not permit cargo-cult low-level code. NEES-EXTREME requires stronger admission evidence and systematic machine-cost reduction, not more tricks for their own sake.
+This does not permit cargo-cult low-level code. NEES-EXTREME requires stronger admission evidence and systematic machine-cost reduction, not more tricks for their own sake. Maximal effort means maximal search and honest disposition, not maximal intervention: an agent MUST NOT apply every plausible method merely to make local metrics look cleaner.
 
 Cost magnitude controls priority, not legitimacy. An agent may defer a small candidate behind a larger structural opportunity, but must not erase the smaller known cost from the optimization record.
 
