@@ -66,6 +66,8 @@ Do not weaken this into:
 
 Cost magnitude controls priority, not legitimacy.
 
+First-time NEES-EXTREME adoption requires a complete declared hot-scope baseline audit. Subsequent work inherits the resulting debt/disposition record and should not be forced to repeat the whole audit unless the scope or assumptions materially change.
+
 A normative change that permits known avoidable E0/E1 work to disappear from the optimization record merely because it is small MUST be treated as a semantic weakening of NEES-EXTREME and requires explicit owner direction.
 
 A normative change MAY improve how cost is measured, costed out, superseded, or prioritized without weakening this doctrine.
