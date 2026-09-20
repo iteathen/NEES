@@ -1,53 +1,91 @@
 # NEES — Node Extreme Execution Standard
 
-**Status:** Draft 0.1 — pre-repository working copy  
+**Status:** Draft 0.2 — active research draft  
 **Scope:** Node.js / V8 extreme-performance implementation intent  
-**Authority:** none; experimental draft  
-**Measurement policy:** intentionally separate from this specification
+**Authority:** experimental; projects opt in explicitly  
+**Measurement policy:** performance qualification is separate from conformance
 
 NEES exists to communicate *how* extreme-performance Node/V8 code is expected to be built.
 
-It is not a style guide, a benchmark standard, or a list of vague performance aspirations. Its purpose is to let a project owner write:
+It is not a JavaScript style guide, a benchmark standard, or a list of vague performance aspirations. Its purpose is to let a project owner write:
 
-> This subsystem conforms to NEES at execution class E0/E1.
+> This subsystem conforms to NEES-EXTREME under the Node 26 / V8 14.6 profile. E0 is the solver recurrence; E2 is work publication/claim.
 
-and give a human or coding agent detailed implementation expectations for representation, allocation, data layout, calls, control flow, derived information, JIT stability, concurrency, worker transport, native escape hatches, diagnostics, and deviations.
+and give a human or coding agent a precise implementation contract for representation, allocation/lifetime, derivation, control flow, JIT assumptions, concurrency, worker transport, native boundaries, diagnostics, and deviations.
 
-## Documents
+## Start here
 
-- `SPEC.md` — stable goals, execution classes, rule model, and core requirements.
-- `NODE_V8_METHODS.md` — detailed Node/V8 realization methods and replacement patterns.
-- `CONFORMANCE.md` — conformance, deviations, version sensitivity, and review requirements.
-- `AGENT_USAGE.md` — manager/agent invocation and implementation workflow.
-- `REFERENCES.md` — first-draft inspiration and source map.
+1. Read [SPEC.md](SPEC.md) for the stable normative contract and execution classes.
+2. Read [NODE_V8_METHODS.md](NODE_V8_METHODS.md) for detailed realization recipes.
+3. Select a runtime profile; the current reference is [RUNTIME_PROFILE_NODE26.md](RUNTIME_PROFILE_NODE26.md).
+4. Read [STALE_ADVICE.md](STALE_ADVICE.md) before relying on remembered JavaScript/V8 performance rules.
+5. Use [CONFORMANCE.md](CONFORMANCE.md) for scope declarations, evidence, deviations, and review.
+6. Use [AGENT_USAGE.md](AGENT_USAGE.md) when directing coding agents.
+7. Consult [REFERENCES.md](REFERENCES.md) for the research/source map.
+
+The Draft 0.2 research reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md).
 
 ## Governing idea
 
-For a declared hot path, minimize the complete execution structure between the semantic operation and machine realization:
+For a declared hot path, minimize the complete execution structure between required semantics and machine realization:
 
 ```text
 semantic requirement
-    -> narrow representation
-    -> prepared data
-    -> stable JIT/runtime shape
-    -> minimal memory traffic / allocation / coordination
+    -> remove unnecessary semantic/general structure
+    -> choose the narrowest useful representation
+    -> prepare reusable/finite structure
+    -> preserve useful runtime/JIT feedback
+    -> minimize allocation, conversion, data movement and coordination
+    -> use the best admitted JS/builtin/native realization
     -> machine execution
 ```
 
-A richer representation or more general mechanism is acceptable only when it carries independently required semantics or when a narrower realization is unavailable or demonstrably worse.
+A richer representation or mechanism is acceptable when it carries independently required semantics or when a narrower realization is unavailable, unsafe, or demonstrably worse.
 
-## Two layers
+## Stable invariants vs runtime methods
 
-NEES separates:
+NEES deliberately separates three layers:
 
-1. **Stable execution principles** — semantic and architectural constraints intended to survive Node/V8 releases.
-2. **Node/V8 realization methods** — concrete methods that can be revision-sensitive.
+1. **Stable execution invariants** — semantic and architectural constraints intended to survive Node/V8 releases.
+2. **Realization methods** — prescriptive Node/V8 techniques with admission conditions and falsifiers.
+3. **Runtime profiles** — concrete, versioned facts such as Worker transport behavior, Buffer pooling, FFI stability, and current V8 architecture.
 
-This prevents temporary V8 behavior from becoming permanent folklore while still giving agents exact methods to use now.
+That separation is a core feature. NEES is intended to be strict without fossilizing stale V8 folklore.
+
+## What NEES-EXTREME does not mean
+
+It does not mean:
+
+- ban every Object, String, Map, Set, Array, Promise, or builtin;
+- make every call site monomorphic;
+- replace every loop with a counted loop;
+- use TypedArrays everywhere;
+- pool every allocation;
+- use native code, WebAssembly, or FFI whenever possible;
+- write branchless source code.
+
+It means that E0/E1 implementation decisions are explicit: the agent names the semantic boundary, execution mechanism, admission condition, falsifier, ownership/lifetime behavior, and runtime assumptions.
+
+## Current reference profile
+
+Draft 0.2 currently ships one reference realization profile:
+
+- **Node 26 / V8 14.6 family** — [RUNTIME_PROFILE_NODE26.md](RUNTIME_PROFILE_NODE26.md)
+
+Projects SHOULD record the exact `process.version`, `process.versions.v8`, OS, and architecture when realization-sensitive behavior is load-bearing.
+
+Additional profiles can be added without weakening the stable core.
 
 ## Automated checks
 
 The `verify` check runs on pull requests and pushes to main and release branches.
-Run `node tools/verify-repository.mjs` locally to check required documents, UTF-8,
-merge markers, JSON and JavaScript syntax, and relative Markdown file links.
+
+Run:
+
+```sh
+node tools/verify-repository.mjs
+```
+
+locally to check required documents, UTF-8, merge markers, JSON and JavaScript syntax, and relative Markdown file links.
+
 These are document-integrity checks, not certification of NEES conformance or performance.
