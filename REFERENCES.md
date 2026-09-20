@@ -1,4 +1,4 @@
-# NEES Draft 0.3 — Research and Source Map
+# NEES Draft 0.4 — Research and Source Map
 
 NEES separates **primary runtime authorities**, **current production evidence**, and **secondary guidance**. No single source is treated as authority for the whole standard.
 
@@ -174,6 +174,10 @@ stable execution invariants
 + concurrency/shared-memory discipline
 + native/FFI decision contracts
 + agent implementation workflow
++ governing optimization units and composite-optimization protection
++ candidate-cost / known-avoidable distinction
++ detector confidence classes and proxy-metric discipline
++ regression-surface qualification
 + deviations and evidence hierarchy
 + incident-to-detector learning
 ```
@@ -196,3 +200,22 @@ This doctrinal revision adds no new Node/V8 factual claims. It clarifies how exi
 - instruction count is a partial signal rather than the objective;
 - unresolved small costs remain durable optimization debt;
 - qualification remains PR-level rather than per-edit.
+
+
+## 9. Draft 0.4 causal-boundary and agent-enforcement reassessment
+
+Internal rationale:
+
+- [research/2026-09-20-causal-optimization-units.md](research/2026-09-20-causal-optimization-units.md)
+
+Important external comparisons:
+
+- [V8 coding agents](https://github.com/v8/agents) and its [V8 performance analysis prompt](https://github.com/v8/agents/blob/main/extensions/v8-utils/skills/v8-perf/system-prompt.md) — current evidence-first workflow: profile, correlate with generated/runtime behavior, form hypotheses, validate.
+- [CodSpeed optimize skill](https://github.com/CodSpeedHQ/codspeed/blob/main/skills/codspeed-optimize/SKILL.md) — benchmark/flamegraph/change/compare workflow and regression checking; useful measurement discipline, while its local one-change-at-a-time and diminishing-return defaults are not NEES-EXTREME doctrine.
+- [Biome JavaScript performance rules](https://next.biomejs.dev/linter/javascript/rules/) — useful example of static performance detectors with different confidence/applicability levels.
+- [eslint-plugin-performance-rules](https://github.com/r2708/eslint-plugin-performance) — static detection of structurally repeated work such as accidental quadratic behavior.
+- [lib0](https://github.com/dmonad/lib0) — project-local performance-oriented JavaScript coding discipline; useful evidence that performance constitutions exist, but also an example of why project/runtime assumptions must remain scoped.
+- [v8-lint](https://github.com/fabulousDesigns/v8-lint) — prototype V8-specific performance linter; useful negative comparison for the danger of turning engine tendencies into unconditional local rules.
+- [V8 bailout reasons](https://github.com/vhf/v8-bailout-reasons) — historical repository that explicitly warns its Crankshaft advice became obsolete after V8 moved to TurboFan, strongly supporting the NEES stale-advice firewall.
+
+Draft 0.4's main conclusion is methodological: performance signals should trigger investigation, not automatic mutation. A cost is only known avoidable after its causal role and governing optimization unit are established.
