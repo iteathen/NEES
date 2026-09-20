@@ -156,7 +156,7 @@ A lower-frequency label MUST NOT be used to hide work that is actually proportio
 
 ### NEES-CORE-001 — Minimize unnecessary execution structure [STABLE]
 
-E0-E2 implementations MUST use the narrowest practical representation and mechanism that preserves required semantics.
+E0-E2 implementations MUST use the narrowest practical representation and mechanism that preserves required semantics and does not worsen total machine cost at the governing optimization unit.
 
 Unnecessary structure includes work or state that:
 
@@ -195,7 +195,7 @@ Before a substantial E0-E2 optimization, identify whether the largest currently 
 - I/O or external latency;
 - JIT compilation/deoptimization.
 
-The largest cost normally determines **priority**, not whether smaller avoidable costs count. A proposed method that does not affect the largest cost remains a legitimate NEES-EXTREME target when it has a concrete mechanism for lowering total machine cost and does not obstruct a higher-value structural change.
+The largest cost normally determines **priority**, not whether smaller candidate costs count. A proposed method that does not affect the largest cost remains a legitimate NEES-EXTREME target when it has a concrete mechanism for lowering total machine cost and does not obstruct a higher-value structural change.
 
 ### NEES-CORE-005 — Preserve superior composite realizations [STABLE]
 
@@ -281,7 +281,7 @@ Owner deferral does not convert known avoidable work into required work. If a kn
 
 ### NEES-XTRM-006 — Maximal effort is not a claim of global optimality [STABLE]
 
-NEES-EXTREME requires systematic search for and disposition of known and reasonably discoverable avoidable machine cost. It does not require a proof that no faster program can exist.
+NEES-EXTREME requires systematic search for and disposition of observed and reasonably discoverable candidate machine cost. It does not require a proof that no faster program can exist.
 
 Conformance therefore means:
 
@@ -373,7 +373,7 @@ Consumers SHOULD receive or index the derived fact rather than rediscover it.
 
 ### NEES-ALLOC-001 — Eliminate avoidable E0 allocation [STABLE]
 
-E0 successful execution MUST NOT allocate dynamic aggregate state when scalar locals, caller-owned scratch, preallocated storage, a reusable resource with natural ownership, or prepared immutable data can represent the same semantics with lower total cost.
+E0 successful execution MUST NOT allocate dynamic aggregate state when scalar locals, caller-owned scratch, preallocated storage, a reusable resource with natural ownership, or prepared immutable data can represent the same semantics with lower total cost at the governing optimization unit.
 
 This includes avoidable Objects, Arrays, Sets, Maps, Promises, closures, buffers/views, iterators, and formatted strings.
 
