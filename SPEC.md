@@ -411,11 +411,11 @@ NEES does NOT require every hot site to be monomorphic. A small stable polymorph
 The actual risks are:
 
 - feedback that keeps changing after tier-up;
-- megamorphic or otherwise unspecializable sites on dominant paths;
+- megamorphic or otherwise unspecializable sites on repeated hot paths;
 - representation transitions that invalidate optimized assumptions;
 - dispatch diversity large enough to block useful specialization.
 
-### NEES-JIT-002 — Stable object and element representations where they matter [V8-SENSITIVE]
+### NEES-JIT-002 — Stable object and element representations at repeated hot access sites [V8-SENSITIVE]
 
 When objects or arrays are retained in E0-E1, their shapes/elements kinds SHOULD remain stable enough for the declared profile.
 
