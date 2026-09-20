@@ -47,9 +47,22 @@ before designing E0-E2 implementation changes.
 5. preserve ownership and failure behavior;
 6. use existing optimized builtins until a narrower replacement is admitted;
 7. keep V8/platform-specific tricks local and documented;
-8. avoid stacking unrelated speculative optimizations into one causal experiment unless structural synthesis is the requested objective.
+8. avoid stacking unrelated speculative optimizations into one causal experiment unless structural synthesis is the requested objective;
+9. continue through the coherent optimization without stopping after each edited line/helper to run the full test suite, benchmark matrix, profiler, or generated-code inspection;
+10. checkpoint reasoning and durable progress regularly;
+11. run a targeted development check when its result can change the next design decision, falsify a premise, or establish a correctness invariant required for continued work.
 
-### After implementation
+### Qualification boundary
+
+The default qualification unit is the coherent completed pull request or equivalent complete change set.
+
+At that boundary, run the applicable correctness, NEES conformance, structural detector, runtime/JIT, performance, regression, and negative-control work required by the project.
+
+Reuse inherited runtime-profile and previously qualified method evidence unless the change crosses an admission boundary or requalification trigger.
+
+Do not split a structural optimization into tiny patches merely so every intermediate edit has an independently measurable delta.
+
+### After implementation / PR qualification
 
 Report:
 
