@@ -1,4 +1,4 @@
-# NEES Conformance and Deviations — Draft 0.3
+# NEES Conformance and Deviations — Draft 0.4
 
 ## 1. What conformance means
 
@@ -22,7 +22,7 @@ A conforming subsystem MUST declare enough context to reconstruct its performanc
 Minimum declaration:
 
 ```text
-NEES: Draft 0.3
+NEES: Draft 0.4
 Conformance level: NEES-CORE | NEES-NODE | NEES-EXTREME
 Execution classes: E0/E1/E2/E3/COLD as applicable
 Runtime profile: <profile id>
@@ -30,6 +30,8 @@ Node: <major or exact version>
 V8: <family or exact process.versions.v8 where relevant>
 OS/arch: <when platform-sensitive>
 Semantic owner: <spec/module/doc>
+Governing optimization unit(s): <smallest enclosing causal performance boundary>
+Regression surface: <shared callers/workloads/resources plausibly affected>
 Hot entry points: <functions/modules>
 Cold/preparation boundaries: <functions/modules>
 ```
@@ -65,6 +67,19 @@ For each E0-E2 performance decision that changes, retains, or deliberately defer
 
 A project MAY use multiple classes, but it SHOULD NOT mislabel a security or semantic constraint as generic V8 performance advice.
 
+## 4.1 Causal role
+
+Before a NEES-EXTREME E0-E2 candidate is described as avoidable, record its relationship to the enclosing optimization:
+
+- **STANDALONE** — changing it does not materially alter a larger optimization;
+- **ENABLING** — its local cost enables a larger saving;
+- **COUPLED** — changing it shifts cost or behavior elsewhere in the enclosing realization;
+- **UNKNOWN** — evidence is insufficient.
+
+Causal role and cost disposition are separate. An ENABLING operation may be TRADEOFF; a STANDALONE operation may be REMOVED or COSTED-OUT.
+
+A static finding, counter reduction, or microbenchmark win MUST NOT classify a cost as known avoidable without considering causal role.
+
 ## 5. Realization record
 
 Every V8-SENSITIVE or PLATFORM-SENSITIVE E0/E1 method MUST have a realization record, either adjacent to the code/design or in a project performance authority.
@@ -74,6 +89,9 @@ NEES method:
 Execution class:
 Mechanism class:
 Semantic owner:
+Governing optimization unit:
+Causal role: STANDALONE | ENABLING | COUPLED | UNKNOWN
+Regression surface:
 Admission condition:
 Expected removed work / preserved runtime property:
 Node:
@@ -98,7 +116,15 @@ Training-memory folklore is not evidence.
 
 ## 6. NEES-EXTREME maximal-effort disposition
 
-A NEES-EXTREME scope MUST preserve the disposition of known or reasonably suspected avoidable E0-E2 machine cost.
+A NEES-EXTREME scope MUST preserve the disposition of observed or reasonably suspected E0-E2 candidate cost, including causal role where it can affect the enclosing optimization.
+
+### Candidate-cost qualification
+
+The existence of machine work is not sufficient to prove that the work is avoidable.
+
+For each material candidate, determine its semantic role, causal role, governing optimization unit, regression surface, admissible replacement if any, and whether that replacement lowers total machine cost at the governing unit.
+
+Until those questions are answered, the candidate remains **UNVERIFIED-DEBT** or another honest unresolved disposition. Do not silently upgrade "looks removable" into "known avoidable."
 
 ### Initial baseline audit
 
@@ -123,7 +149,7 @@ The affected hot-path review uses these dispositions:
 - **COSTED-OUT** — a qualified alternative is equal or worse in total machine cost.
 - **REMOVED** — eliminated by the completed change.
 - **SUPERSEDED** — eliminated because a structural change removes the mechanism.
-- **UNVERIFIED-DEBT** — a plausible avoidable cost remains unresolved.
+- **UNVERIFIED-DEBT** — a plausible candidate cost remains unresolved or its causal role is unqualified.
 - **DEVIATION** — known avoidable cost is deliberately retained.
 
 The following are not valid dispositions:
@@ -147,6 +173,9 @@ Each debt item SHOULD record:
 ```text
 site / operation:
 execution class:
+governing optimization unit:
+causal role:
+regression surface:
 cost mechanism:
 current evidence:
 current disposition:
@@ -203,6 +232,9 @@ If the deviation depends on current engine behavior, it MUST include a runtime-v
 An agent changing E0-E2 code MUST report the changed operation in terms of:
 
 - semantic quantity required;
+- governing optimization unit;
+- causal role of changed/retained local cost;
+- regression surface;
 - representation before/after;
 - allocations and lifetime before/after;
 - repeated derivations removed/added;
@@ -253,6 +285,12 @@ Evidence gathered to decide whether the completed change is promotable.
 
 The default qualification unit is a coherent completed pull request or equivalent complete change set.
 
+Performance qualification MUST evaluate the change at the governing optimization unit that owns the claimed benefit. Local microbenchmarks, counters, static findings, and generated-code properties are supporting evidence unless the local operation is itself the governing unit.
+
+When multiple components form a composite optimization, qualify the composite as a unit. A locally adverse component does not fail qualification merely because its isolated metric is worse when the composite lowers total machine cost.
+
+The qualification SHOULD also inspect the identified regression surface so a target win does not silently move greater cost into shared callers, other workloads, code size, memory pressure, GC, JIT state, coordination, or another affected resource.
+
 Before promotion, the qualification unit MUST receive the applicable project-required:
 
 - semantic/correctness qualification;
@@ -281,6 +319,20 @@ When sources disagree, use this order unless there is a documented reason not to
 
 A newer secondary source does not override a primary source merely because it is newer. Conversely, an old primary implementation article may no longer describe current realization. State the mismatch.
 
+### Performance-evidence hierarchy
+
+For a performance decision, prefer evidence closest to the actual causal objective:
+
+1. reliable measurement of the required workload at the governing optimization unit;
+2. enclosing subsystem or representative end-to-end measurement;
+3. local operation/microbenchmark measurement;
+4. runtime/hardware explanatory evidence such as generated code, deopts, counters, flamegraphs, cache behavior, allocation or GC signals;
+5. static/source indicators.
+
+Lower levels are often essential for explaining **why** performance changed. They do not automatically override a reliable contradictory result at a higher causal level.
+
+If higher-level evidence is too noisy, unavailable, or prohibitively expensive, record that limitation explicitly rather than assuming the proxy and objective are equivalent.
+
 ## 11. Negative controls and falsification
 
 At the qualification boundary, a performance claim is stronger when the observation mechanism is shown to see the property under test.
@@ -304,6 +356,15 @@ For a V8/JIT claim:
 ## 12. Deterministic detectors
 
 Projects SHOULD convert recurring NEES failures into deterministic checks where practical.
+
+A detector SHOULD be classified by what it can actually prove:
+
+- **PROVEN-STRUCTURAL** — directly observes a runtime-independent structural property;
+- **PROFILE-SENSITIVE** — performance meaning depends on the selected Node/V8/platform profile;
+- **CONTEXTUAL** — value depends on enclosing architecture/workload;
+- **EXPERIMENTAL** — hypothesis not yet established generally.
+
+Only a detector whose observed property is itself a project requirement, or whose performance implication has been qualified at the governing optimization unit, should normally become an unconditional performance hard gate.
 
 Examples:
 
@@ -360,7 +421,7 @@ NEES-CORE plus applicable Node worker/Buffer/transport/native-boundary/runtime-p
 
 NEES-NODE plus all applicable E0/E1 allocation, representation, JIT stability, capacity, locality, coordination, and maximal-effort machine-cost requirements.
 
-NEES-EXTREME does not mean "use every low-level technique". It means every applicable low-level decision is explicit and evidence-gated, known avoidable hot work is not silently ignored, small costs remain visible as optimization debt, and "fast enough" is not a stopping condition.
+NEES-EXTREME does not mean "use every low-level technique". It means candidate hot-path cost is systematically discovered and dispositioned, causal role and governing optimization units are respected, realization-sensitive decisions are evidence-gated, superior composite optimizations are preserved, small costs remain visible as debt, and "fast enough" is not a stopping condition.
 
 ## 16. Non-goals
 

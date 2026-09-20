@@ -1,4 +1,4 @@
-# NEES Node/V8 Realization Methods — Draft 0.3
+# NEES Node/V8 Realization Methods — Draft 0.4
 
 This document is the prescriptive realization layer for NEES.
 
@@ -1124,7 +1124,7 @@ At first NEES-EXTREME adoption, inspect the **complete declared E0-E2 hot scope*
 
 After a baseline audit exists, each coherent qualification boundary inspects the affected hot execution plus inherited debt whose assumptions were touched or invalidated.
 
-For each repeated operation or mechanism reasonably visible in the affected neighborhood, consider:
+For each repeated operation or mechanism reasonably visible in the affected neighborhood, treat it first as a candidate cost and consider:
 
 ```text
 semantic operation
@@ -1141,7 +1141,9 @@ native or builtin boundary
 generated-code/runtime behavior when load-bearing
 ```
 
-Disposition each known cost as one of:
+Before disposition, identify the candidate's governing optimization unit and causal role: STANDALONE, ENABLING, COUPLED, or UNKNOWN.
+
+Disposition each candidate cost as one of:
 
 - **REQUIRED** — semantics or load-bearing constraint requires it;
 - **TRADEOFF** — retained because it reduces greater total machine cost elsewhere;
@@ -1181,3 +1183,82 @@ A candidate with more instructions MAY be superior when it lowers elapsed machin
 Conversely, a candidate with fewer source operations or fewer retired instructions is not promoted if total execution cost is worse.
 
 When hardware counters are unavailable, mark the missing dimension as uncertainty rather than assuming it is zero.
+
+---
+
+## M47 — Establish the governing optimization unit before local rewrites
+
+**Applies:** NEES-EXTREME E0-E2  
+**Stability:** STABLE
+
+### Admission
+
+A local operation appears expensive, violates a performance preference, triggers a detector, or has an apparently cheaper replacement.
+
+### Method
+
+Trace enough upstream/downstream effects to identify the smallest enclosing causal structure whose total cost owns the claimed performance effect. Use that enclosing structure as the governing optimization unit.
+
+### Reject
+
+Do not promote the local rewrite solely from a helper benchmark or local counter when the mechanism participates in a larger optimization.
+
+---
+
+## M48 — Treat detector findings as hypotheses until causal role is established
+
+**Applies:** E0-E2  
+**Stability:** STABLE
+
+A static rule, deoptimization trace, allocation count, branch count, object-shape warning, cache-miss signal, or other detector can establish that a property exists. It does not automatically establish that changing the property improves the system.
+
+Workflow: detect -> identify semantic role -> classify causal role -> identify governing optimization unit -> propose admissible replacement -> qualify enclosing effect.
+
+A PROVEN-STRUCTURAL detector may justify stronger automation when the project has independently made that structural property a requirement.
+
+---
+
+## M49 — Qualify composite optimizations as composite units
+
+**Applies:** NEES-EXTREME E0-E2  
+**Stability:** STABLE
+
+### Admission
+
+The benefit of an optimization arises from interaction among multiple components, or a locally adverse component enables a larger saving elsewhere.
+
+### Method
+
+Record the components, governing optimization unit, net mechanism, locally adverse components, why those components exist, qualification evidence, and regression surface.
+
+Do not independently "repair" a component whose apparent inefficiency is load-bearing for the composite unless the replacement preserves or improves the composite result.
+
+Composite protection does not erase local debt. It constrains future replacements to preserve the larger benefit.
+
+---
+
+## M50 — Map the regression surface before promotion
+
+**Applies:** E0-E3  
+**Stability:** STABLE
+
+A targeted optimization can move cost into places not represented by the target benchmark.
+
+Before promotion, identify plausible affected surfaces such as shared callers, alternate input distributions, worker counts/scheduling states, memory footprint/GC, generated-code size/i-cache pressure, JIT warm-up/deoptimization, contention/coherence, native transport, and product-relevant startup paths.
+
+Test the material surfaces required by the project's risk and performance claim. A target win with a larger regression elsewhere is not an improvement unless the wider tradeoff is explicit and favorable.
+
+---
+
+## M51 — Use local proxy metrics diagnostically
+
+**Applies:** NEES-EXTREME E0-E2  
+**Stability:** STABLE
+
+Allocation count, instruction count, branches, deopts, cache misses, Atomics, code size, microbenchmarks, and static rule counts are diagnostic dimensions.
+
+Use them to locate likely cost, explain a measured change, falsify a proposed mechanism, and construct deterministic regression detectors.
+
+Do not optimize a proxy independently when doing so worsens the governing optimization unit.
+
+When the governing measurement cannot be obtained reliably, preserve the uncertainty and avoid claiming that a proxy improvement proves a system improvement.

@@ -1,4 +1,4 @@
-# NEES Core Specification — Draft 0.3
+# NEES Core Specification — Draft 0.4
 
 ## 1. Purpose
 
@@ -8,7 +8,7 @@ NEES is not a benchmark standard and it does not assert that conforming code is 
 
 The central objective is to minimize the complete execution structure and **total machine cost** between the required semantics and the machine realization, without weakening semantics or turning current-engine folklore into permanent rules.
 
-For **NEES-EXTREME**, "fast enough" is not a stopping criterion. After required semantics, safety, lifecycle, resource, and deployment constraints are fixed, every known avoidable E0-E2 cost remains an optimization target until it is removed, shown to reduce greater cost elsewhere, shown unavoidable on the selected realization, qualified as no better than the retained form, or explicitly carried as optimization debt/deviation.
+For **NEES-EXTREME**, "fast enough" is not a stopping criterion. After required semantics, safety, lifecycle, resource, and deployment constraints are fixed, every observed or reasonably suspected E0-E2 **candidate cost** remains subject to investigation and disposition. A candidate cost becomes a **known avoidable cost** only when an admissible replacement has been established that reduces total machine cost at the governing optimization unit without an overriding regression elsewhere. Known avoidable cost remains an optimization target until it is removed, structurally superseded, qualified as no better than the retained form, or explicitly carried as optimization debt/deviation.
 
 The objective is minimum realizable machine cost, not minimum source lines or minimum instruction count in isolation. A realization with more instructions may be better when it reduces critical dependency depth, memory traffic, cache/TLB misses, branch misses, boxing/conversion, allocation/GC, synchronization/coherence, runtime dispatch, native-boundary cost, or other stall cycles.
 
@@ -27,6 +27,14 @@ Rules carry a stability tag:
 - **EXPERIMENTAL** — useful candidate method whose generality has not been established.
 
 A deviation from MUST or MUST NOT requires an explicit deviation record under [CONFORMANCE.md](CONFORMANCE.md).
+
+NEES uses the following optimization vocabulary:
+
+- **candidate cost** — observed or reasonably suspected machine/runtime work that may be reducible but whose wider causal role has not yet been established;
+- **known avoidable cost** — a candidate cost for which an admissible replacement is established that preserves required semantics and lowers total machine cost at the governing optimization unit without an overriding regression;
+- **governing optimization unit** — the smallest enclosing causal structure within which the performance consequences of a candidate can be evaluated without omitting load-bearing interactions;
+- **composite optimization** — an optimization whose benefit arises from interaction among multiple components such that one or more components may be locally inferior while the enclosing realization is superior;
+- **regression surface** — other workloads, callers, shared mechanisms, runtime states, or resources that a change can plausibly worsen even when its target operation improves.
 
 ## 3. Runtime profiles are part of the method contract
 
@@ -84,6 +92,30 @@ A method already qualified for the active runtime/profile does not require fresh
 
 The qualification boundary SHOULD preserve a coherent structural optimization. It SHOULD NOT force useful architecture changes into tiny patches merely so each micro-delta is independently measurable.
 
+### NEES-EVID-005 — Detection creates an investigation obligation, not mutation authority [STABLE]
+
+Finding an apparently expensive operation, a static-rule match, an unfavorable counter, a deoptimization, a locally slower subcomponent, or another performance signal MUST NOT by itself authorize a rewrite.
+
+The finding creates an obligation to determine its semantic/architectural role, causal role in the enclosing optimization, governing optimization unit, likely regression surface, and whether an admissible replacement actually lowers total machine cost.
+
+A detector MAY establish a structural fact. It does not automatically establish that removing the detected mechanism improves the system.
+
+### NEES-EVID-006 — Qualify at the governing optimization unit [STABLE]
+
+An E0-E2 optimization MUST identify the smallest enclosing causal structure that owns the claimed performance effect.
+
+Local measurements MAY explain or diagnose that effect, but a local improvement MUST NOT be promoted when it increases total machine cost at the governing optimization unit unless the local regression is itself part of an explicitly justified still-larger tradeoff.
+
+When an optimization derives its benefit from interaction among multiple components, those components SHOULD be qualified as one composite optimization.
+
+### NEES-EVID-007 — Proxy metrics are subordinate evidence [STABLE]
+
+Instruction count, branch count, allocation count, deoptimization count, Atomics count, cache misses, generated-code size, microbenchmark time, static-rule findings, and similar measurements are partial signals.
+
+A proxy metric MUST NOT become the optimization objective merely because it is easy to measure.
+
+When reliable evidence exists at the governing optimization unit, it outranks a conflicting local proxy for the performance decision. When such evidence is too noisy, unavailable, or impractical, the missing evidence MUST be recorded as uncertainty rather than assumed favorable.
+
 ## 4. Execution classes
 
 Every NEES scope MUST declare an execution class.
@@ -124,7 +156,7 @@ A lower-frequency label MUST NOT be used to hide work that is actually proportio
 
 ### NEES-CORE-001 — Minimize unnecessary execution structure [STABLE]
 
-E0-E2 implementations MUST use the narrowest practical representation and mechanism that preserves required semantics.
+E0-E2 implementations MUST use the narrowest practical representation and mechanism that preserves required semantics and does not worsen total machine cost at the governing optimization unit.
 
 Unnecessary structure includes work or state that:
 
@@ -163,7 +195,17 @@ Before a substantial E0-E2 optimization, identify whether the largest currently 
 - I/O or external latency;
 - JIT compilation/deoptimization.
 
-The largest cost normally determines **priority**, not whether smaller avoidable costs count. A proposed method that does not affect the largest cost remains a legitimate NEES-EXTREME target when it has a concrete mechanism for lowering total machine cost and does not obstruct a higher-value structural change.
+The largest cost normally determines **priority**, not whether smaller candidate costs count. A proposed method that does not affect the largest cost remains a legitimate NEES-EXTREME target when it has a concrete mechanism for lowering total machine cost and does not obstruct a higher-value structural change.
+
+### NEES-CORE-005 — Preserve superior composite realizations [STABLE]
+
+A local implementation MUST NOT be rewritten solely to improve its isolated cost when that local mechanism is an enabling or coupled part of a lower-cost enclosing realization.
+
+Before replacing a locally non-ideal operation, determine whether it enables a larger structural elimination, amortizes coordination/conversion/setup/materialization, preserves locality or reuse, improves worker utilization or batching, carries information that prevents greater downstream work, or otherwise participates in a cross-component mechanism whose benefit would be weakened by the rewrite.
+
+A locally inferior component MAY therefore be retained as a **TRADEOFF** inside a superior composite optimization.
+
+Known local debt remains visible. Composite protection constrains the admissible replacement; it does not convert the local cost into zero cost.
 
 ### NEES-XTRM-001 — Minimize total machine cost [STABLE]
 
@@ -186,25 +228,23 @@ The cost model includes, where applicable:
 
 No one metric is automatically authoritative. The target is total execution cost.
 
-### NEES-XTRM-002 — Presume observed avoidable work is optimization debt [STABLE]
+### NEES-XTRM-002 — Classify candidate cost before calling it avoidable [STABLE]
 
-Within a NEES-EXTREME E0-E2 scope, an observed operation, representation, memory access, allocation, conversion, branch, call, synchronization event, materialization, or runtime mechanism MUST NOT be retained merely because it is conventional, readable, idiomatic, already fast, individually small, or not currently dominant.
+Within a NEES-EXTREME E0-E2 scope, an observed operation, representation, memory access, allocation, conversion, branch, call, synchronization event, materialization, or runtime mechanism is initially a **candidate cost** unless its causal role is already established.
 
-It is considered resolved only when at least one of these is established:
+A candidate MUST NOT be called "known avoidable" solely because a locally cheaper form exists, a static rule objects to it, a proxy counter decreases, or a microbenchmark improves.
 
-1. it is required by semantics;
-2. it is required by safety, lifecycle, ownership, resource, ABI, permission, or deployment constraints;
-3. retaining it reduces greater total machine cost elsewhere;
-4. it is unavoidable under the selected Node/V8/platform realization;
-5. a qualified alternative has equal or greater total machine cost;
-6. it has been removed or structurally superseded;
-7. it is explicitly recorded as unresolved optimization debt or a deviation.
+Before mutation, determine whether the candidate is **STANDALONE**, **ENABLING**, **COUPLED**, or **UNKNOWN** with respect to the enclosing optimization.
+
+A candidate becomes a **known avoidable cost** only when an admissible replacement preserves required semantics and lowers total machine cost at the governing optimization unit without an overriding regression on the identified regression surface.
+
+A candidate is dispositioned when it is required, a favorable tradeoff, unavoidable on the profile, costed out, removed, structurally superseded, recorded as unresolved debt, or deliberately retained as a deviation.
 
 ### NEES-XTRM-003 — Cost magnitude controls priority, not legitimacy [STABLE]
 
-A known avoidable E0/E1 cost does not cease to be an optimization target because its isolated effect is small or because another bottleneck is larger.
+A candidate or known avoidable E0/E1 cost does not cease to deserve disposition merely because its isolated effect is small or because another bottleneck is larger.
 
-Projects SHOULD attack higher-leverage costs first, but smaller known costs MUST remain visible until resolved, disproven, superseded, or explicitly deferred.
+Projects SHOULD attack higher-leverage costs first, but smaller candidates MUST remain visible until resolved, disproven, superseded, or explicitly deferred. Visibility does not imply mandatory mutation; causal qualification determines whether a change is admissible.
 
 A threshold such as "less than 1%" MAY be used to prioritize work. It MUST NOT be used as a general rule that the cost is irrelevant.
 
@@ -241,18 +281,29 @@ Owner deferral does not convert known avoidable work into required work. If a kn
 
 ### NEES-XTRM-006 — Maximal effort is not a claim of global optimality [STABLE]
 
-NEES-EXTREME requires systematic search for and disposition of known and reasonably discoverable avoidable machine cost. It does not require a proof that no faster program can exist.
+NEES-EXTREME requires systematic search for and disposition of observed and reasonably discoverable candidate machine cost. It does not require a proof that no faster program can exist.
 
 Conformance therefore means:
 
 ```text
-no known avoidable hot-path work silently ignored
-+ explicit treatment of unresolved cost
+no candidate hot-path cost silently ignored
++ no local optimization promoted across a worse governing boundary
++ explicit treatment of unresolved cost and causal role
 + current-runtime evidence for realization-sensitive choices
 + continued eligibility of small exact improvements
 ```
 
 It does not mean "globally optimal machine code has been mathematically proved".
+
+### NEES-XTRM-007 — Maximal effort governs search and disposition, not mandatory intervention [STABLE]
+
+NEES-EXTREME requires maximal effort in **finding, understanding, and dispositioning** potentially reducible machine cost.
+
+It does not require applying every NEES method, rewriting every detector finding, minimizing every local proxy metric, or making every component locally fastest.
+
+An implementation can be maximally optimized while intentionally retaining locally adverse components when those components are required, enable a superior composite realization, are coupled to a lower-cost enclosing design, or have been costed out against admissible alternatives.
+
+The required loop is: search broadly -> establish causal role -> identify governing optimization unit -> admit candidate replacement -> qualify enclosing effect and regression surface -> remove / retain / supersede / defer honestly.
 
 ## 6. Boundary discipline
 
@@ -322,7 +373,7 @@ Consumers SHOULD receive or index the derived fact rather than rediscover it.
 
 ### NEES-ALLOC-001 — Eliminate avoidable E0 allocation [STABLE]
 
-E0 successful execution MUST NOT allocate dynamic aggregate state when scalar locals, caller-owned scratch, preallocated storage, a reusable resource with natural ownership, or prepared immutable data can represent the same semantics with lower total cost.
+E0 successful execution MUST NOT allocate dynamic aggregate state when scalar locals, caller-owned scratch, preallocated storage, a reusable resource with natural ownership, or prepared immutable data can represent the same semantics with lower total cost at the governing optimization unit.
 
 This includes avoidable Objects, Arrays, Sets, Maps, Promises, closures, buffers/views, iterators, and formatted strings.
 

@@ -1,6 +1,6 @@
 # NEES — Node Extreme Execution Standard
 
-**Status:** Draft 0.3 — active research draft  
+**Status:** Draft 0.4 — active research draft  
 **Scope:** Node.js / V8 extreme-performance implementation intent  
 **Authority:** experimental; projects opt in explicitly  
 **Measurement policy:** performance qualification is separate from conformance
@@ -23,7 +23,7 @@ and give a human or coding agent a precise implementation contract for represent
 6. Use [AGENT_USAGE.md](AGENT_USAGE.md) when directing coding agents.
 7. Consult [REFERENCES.md](REFERENCES.md) for the research/source map.
 
-The Draft 0.2 runtime-grounding reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md). Draft 0.3's maximal-effort rationale is preserved at [research/2026-09-20-maximal-effort-doctrine.md](research/2026-09-20-maximal-effort-doctrine.md).
+The Draft 0.2 runtime-grounding reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md). Draft 0.3's maximal-effort rationale is preserved at [research/2026-09-20-maximal-effort-doctrine.md](research/2026-09-20-maximal-effort-doctrine.md). Draft 0.4's causal-boundary reassessment is preserved at [research/2026-09-20-causal-optimization-units.md](research/2026-09-20-causal-optimization-units.md).
 
 ## Governing idea
 
@@ -31,6 +31,7 @@ For a declared hot path, minimize the complete execution structure between requi
 
 ```text
 semantic requirement
+    -> identify governing optimization unit and causal role
     -> remove unnecessary semantic/general structure
     -> choose the narrowest useful representation
     -> prepare reusable/finite structure
@@ -58,7 +59,9 @@ NEES-EXTREME is a **maximal-effort machine-cost discipline**.
 
 After semantics and load-bearing constraints are fixed, the goal is to minimize total realizable machine cost across the hot execution: computation, critical-path dependency depth, memory traffic, cache/TLB behavior, branches, allocation/GC, boxing/conversion, runtime dispatch, synchronization/coherence, transport, and boundary crossing.
 
-A small known avoidable E0/E1 cost remains a valid optimization target. A larger bottleneck normally gets attention first, but "not the bottleneck", "too small to matter", and "already fast enough" do not erase the smaller cost.
+A small candidate E0/E1 cost remains entitled to investigation and honest disposition. A larger bottleneck normally gets attention first, but "not the bottleneck", "too small to matter", and "already fast enough" do not erase the smaller candidate.
+
+Draft 0.4 distinguishes **candidate cost** from **known avoidable cost**. A locally cheaper implementation does not prove that the current local cost is avoidable if that cost enables or is coupled to a larger optimization. NEES therefore evaluates performance at the smallest enclosing causal boundary that owns the benefit and protects superior composite realizations from locally greedy rewrites.
 
 NEES-EXTREME therefore has no "fast enough" stopping condition. Work stops because no further justified improvement is presently known, the remaining structure is required/unavoidable, alternatives have been costed out, a structural successor supersedes the local target, or unresolved work is explicitly retained as optimization debt/deviation.
 
@@ -76,7 +79,9 @@ It does not mean:
 - use TypedArrays everywhere;
 - pool every allocation;
 - use native code, WebAssembly, or FFI whenever possible;
-- write branchless source code.
+- write branchless source code;
+- apply every NEES method that appears syntactically relevant;
+- make every component locally fastest at the expense of a superior composite optimization.
 
 It means that E0/E1 implementation decisions are explicit: the agent names the semantic boundary, execution mechanism, admission condition, falsifier, ownership/lifetime behavior, runtime assumptions, machine-cost effect, and any remaining optimization debt.
 
@@ -96,7 +101,7 @@ NEES is designed to support aggressive coherent optimization without turning dev
 
 The default qualification unit is a completed coherent pull request or equivalent change set. During development, agents reuse inherited runtime/method evidence and run targeted checks only when the result can change the next implementation decision or protect a required correctness invariant.
 
-Full correctness, conformance, structural, runtime/JIT, and performance qualification is performed at the promotion boundary as applicable.
+Full correctness, conformance, structural, runtime/JIT, and performance qualification is performed at the promotion boundary as applicable. Performance claims are evaluated at the governing optimization unit, with local counters and microbenchmarks used as explanatory evidence rather than automatic authority over a contradictory enclosing result.
 
 ## Automated checks
 

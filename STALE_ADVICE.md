@@ -1,4 +1,4 @@
-# NEES Stale-Advice Firewall — Draft 0.3
+# NEES Stale-Advice Firewall — Draft 0.4
 
 This document records common performance statements that MUST NOT be treated as unconditional NEES rules.
 
@@ -198,3 +198,30 @@ Instruction count is one cost signal. More instructions can reduce elapsed cycle
 Conversely, fewer instructions can be slower when they increase serial dependency or memory latency.
 
 **Use instead:** M46 and target-profile evidence for the actual critical path.
+
+
+## 20. "A local improvement proves the system improved"
+
+**NEES stance:** false.
+
+A faster helper, fewer allocations, fewer branches, a lower deopt count, or a better microbenchmark can still make the enclosing realization slower by weakening batching, locality, worker utilization, code size, reuse, specialization, or another cross-component mechanism.
+
+**Use instead:** identify the governing optimization unit and regression surface, then qualify the enclosing effect.
+
+## 21. "If a NEES method applies, use it"
+
+**NEES stance:** false.
+
+NEES methods are admitted mechanisms, not optimization obligations. Multiple individually plausible methods can interact badly, and a method can be locally beneficial while damaging a superior composite realization.
+
+**Use instead:** admission + causal-role analysis + governing-unit qualification.
+
+## 22. "A detector finding should be fixed immediately"
+
+**NEES stance:** false.
+
+A detector can establish that a property exists. It does not automatically establish that the property is unnecessary or that changing it lowers total machine cost.
+
+Static/proxy findings create an investigation obligation. Mutation requires an admissible replacement and the correct causal boundary.
+
+**Use instead:** NEES-EVID-005 through EVID-007 and M47 through M51.
