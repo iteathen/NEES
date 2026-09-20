@@ -1,4 +1,4 @@
-# NEES Conformance and Deviations — Draft 0.2
+# NEES Conformance and Deviations — Draft 0.3
 
 ## 1. What conformance means
 
@@ -22,7 +22,7 @@ A conforming subsystem MUST declare enough context to reconstruct its performanc
 Minimum declaration:
 
 ```text
-NEES: Draft 0.2
+NEES: Draft 0.3
 Conformance level: NEES-CORE | NEES-NODE | NEES-EXTREME
 Execution classes: E0/E1/E2/E3/COLD as applicable
 Runtime profile: <profile id>
@@ -49,7 +49,7 @@ For every applicable normative rule, review uses one of:
 
 ## 4. Mechanism class
 
-For each material E0-E2 performance decision, identify the primary mechanism class:
+For each E0-E2 performance decision that changes, retains, or deliberately defers hot execution structure, identify the primary mechanism class:
 
 - **SEMANTIC** — stronger facts reduce the required state/work.
 - **COMPLEXITY** — fewer asymptotic operations.
@@ -96,7 +96,71 @@ Examples of acceptable evidence:
 
 Training-memory folklore is not evidence.
 
-## 6. Deviation record
+## 6. NEES-EXTREME maximal-effort disposition
+
+A NEES-EXTREME scope MUST preserve the disposition of known or reasonably suspected avoidable E0-E2 machine cost.
+
+The affected hot-path review uses these dispositions:
+
+- **REQUIRED** — required by semantics or another load-bearing constraint.
+- **TRADEOFF** — retained because removing it increases greater total machine cost elsewhere.
+- **UNAVOIDABLE-PROFILE** — unavoidable under the selected Node/V8/platform realization.
+- **COSTED-OUT** — a qualified alternative is equal or worse in total machine cost.
+- **REMOVED** — eliminated by the completed change.
+- **SUPERSEDED** — eliminated because a structural change removes the mechanism.
+- **UNVERIFIED-DEBT** — a plausible avoidable cost remains unresolved.
+- **DEVIATION** — known avoidable cost is deliberately retained.
+
+The following are not valid dispositions:
+
+- "already fast";
+- "not the bottleneck";
+- "too small to matter";
+- "idiomatic";
+- "cleaner";
+- "probably optimized";
+- "no benchmark complained".
+
+### Optimization-debt record
+
+A NEES-EXTREME project MUST keep known unresolved E0/E1 optimization debt durable enough that a later agent does not rediscover it from scratch.
+
+The record MAY live in code-local performance authority, issue tracking, a conformance report, or another durable project surface.
+
+Each debt item SHOULD record:
+
+```text
+site / operation:
+execution class:
+cost mechanism:
+current evidence:
+current disposition:
+why retained or unresolved:
+runtime/profile:
+candidate replacement or question:
+revisit trigger:
+owner / authority:
+```
+
+A **known avoidable** E0/E1 cost that is deliberately retained is a DEVIATION; it MUST NOT be reported as plain CONFORMS.
+
+A merely suspected cost may remain UNVERIFIED-DEBT while the scope otherwise conforms, provided it is visible and the project has not falsely claimed that the mechanism is required or free.
+
+### Cost magnitude
+
+Cost magnitude determines work ordering, not whether an item exists.
+
+A project MAY defer a 0.05% candidate behind a 20% structural problem. It MUST NOT erase the smaller candidate merely because a larger bottleneck exists.
+
+### Maximal-effort stopping rule
+
+A NEES-EXTREME review may close a qualification unit when the completed change is promotable and all observed affected-scope costs have an honest disposition.
+
+It need not prove global optimality or exhaust every hypothetical rewrite.
+
+It MUST NOT use "fast enough" as the reason to stop examining a known avoidable cost.
+
+## 7. Deviation record
 
 A MUST/MUST NOT deviation requires:
 
@@ -119,7 +183,7 @@ Revisit trigger:
 
 If the deviation depends on current engine behavior, it MUST include a runtime-version revisit trigger.
 
-## 7. Evidence required from implementation agents
+## 8. Evidence required from implementation agents
 
 An agent changing E0-E2 code MUST report the changed operation in terms of:
 
@@ -135,11 +199,13 @@ An agent changing E0-E2 code MUST report the changed operation in terms of:
 - semantic preconditions used for specialization;
 - cold/hot boundary movement;
 - version-sensitive assumptions;
-- admission condition and falsifier.
+- admission condition and falsifier;
+- machine-cost dimensions affected;
+- remaining known/suspected optimization debt in the affected E0-E2 neighborhood.
 
 This explanation is required even when no wall-clock benchmark is run.
 
-## 8. Evidence phases and qualification boundary
+## 9. Evidence phases and qualification boundary
 
 NEES distinguishes three evidence phases.
 
@@ -187,7 +253,7 @@ A targeted development check is encouraged when its result can falsify a premise
 
 The qualification unit SHOULD be structurally coherent. Do not split one architectural optimization into artificially tiny patches solely to make each intermediate delta independently measurable.
 
-## 9. Evidence hierarchy
+## 10. Evidence hierarchy
 
 When sources disagree, use this order unless there is a documented reason not to:
 
@@ -200,7 +266,7 @@ When sources disagree, use this order unless there is a documented reason not to
 
 A newer secondary source does not override a primary source merely because it is newer. Conversely, an old primary implementation article may no longer describe current realization. State the mismatch.
 
-## 10. Negative controls and falsification
+## 11. Negative controls and falsification
 
 At the qualification boundary, a performance claim is stronger when the observation mechanism is shown to see the property under test.
 
@@ -220,7 +286,7 @@ For a V8/JIT claim:
 
 - verify the relevant function/path actually reaches the assumed optimized state when that assumption is load-bearing.
 
-## 11. Deterministic detectors
+## 12. Deterministic detectors
 
 Projects SHOULD convert recurring NEES failures into deterministic checks where practical.
 
@@ -240,7 +306,7 @@ Examples:
 
 A deterministic detector is evidence only for the property it observes.
 
-## 12. Incident learning
+## 13. Incident learning
 
 When a material performance defect is traced to a recurring implementation shape, the owning project SHOULD produce at least one of:
 
@@ -253,7 +319,7 @@ When a material performance defect is traced to a recurring implementation shape
 
 This keeps NEES grounded in lived failures rather than generic folklore.
 
-## 13. Runtime revisions
+## 14. Runtime revisions
 
 A Node/V8 major change does not invalidate STABLE rules.
 
@@ -265,7 +331,7 @@ An experimental Node API version change triggers review of methods that depend o
 
 Projects SHOULD record the exact production runtime tuple when performance is release-critical.
 
-## 14. Conformance levels
+## 15. Conformance levels
 
 ### NEES-CORE
 
@@ -277,11 +343,11 @@ NEES-CORE plus applicable Node worker/Buffer/transport/native-boundary/runtime-p
 
 ### NEES-EXTREME
 
-NEES-NODE plus all applicable E0/E1 allocation, representation, JIT stability, capacity, locality, and coordination requirements.
+NEES-NODE plus all applicable E0/E1 allocation, representation, JIT stability, capacity, locality, coordination, and maximal-effort machine-cost requirements.
 
-NEES-EXTREME does not mean "use every low-level technique". It means every applicable low-level decision is explicit and evidence-gated.
+NEES-EXTREME does not mean "use every low-level technique". It means every applicable low-level decision is explicit and evidence-gated, known avoidable hot work is not silently ignored, small costs remain visible as optimization debt, and "fast enough" is not a stopping condition.
 
-## 15. Non-goals
+## 16. Non-goals
 
 NEES does not require:
 
@@ -300,3 +366,7 @@ NEES does not require:
 The governing rule is:
 
 > Do not carry unnecessary computational, representational, allocation, coordination, or runtime generality through a declared hot path, and do not replace a good runtime realization with folklore.
+
+For NEES-EXTREME, add:
+
+> Minimize total machine cost. Treat every known avoidable hot-path cost as work to remove, cost out, structurally supersede, prove unavoidable, or preserve explicitly as debt/deviation.
