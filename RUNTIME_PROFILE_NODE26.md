@@ -190,7 +190,22 @@ Source: [Process](https://nodejs.org/api/process.html#processmemoryusage).
 
 Do not put full `process.memoryUsage()` on E0-E2 success paths. Sample or move it cold unless the measurement itself is the required operation.
 
-## 12. Profile requalification triggers
+## 12. Async context and diagnostics semantics
+
+Node 26 documents `AsyncLocalStorage` as the preferred, optimized, memory-safe mechanism for async context tracking. The lower-level `createHook` / `AsyncHook` APIs are experimental and explicitly carry usability, safety, and performance implications.
+
+Sources:
+
+- [Asynchronous context tracking](https://nodejs.org/api/async_context.html)
+- [Async hooks](https://nodejs.org/api/async_hooks.html)
+
+### Profile consequence
+
+If async context propagation is required semantics, do not invent a custom context mechanism or reject `AsyncLocalStorage` merely because it is high-level. Start from the supported optimized primitive and specialize only with a concrete reason.
+
+Do not enable broad async-hooks observation on an extreme path merely for convenience; use the narrowest diagnostic/context API that answers the requirement.
+
+## 13. Profile requalification triggers
 
 Requalify affected methods when any of these change:
 
