@@ -84,6 +84,20 @@ NEES MUST NOT trade away correctness, safety, ownership, identity, restoration, 
 
 Unsafe or experimental mechanisms such as raw FFI require stronger documentation, not weaker semantics.
 
+## Qualification cadence
+
+NEES itself MUST NOT impose full test/profile/benchmark qualification after every optimized line or local edit.
+
+For implementation work governed by NEES:
+
+- reason and implement through a coherent change set;
+- reuse inherited profile/method evidence;
+- run targeted checks during development only when their answer can change the next step or protect a required correctness invariant;
+- treat the completed pull request or equivalent coherent change set as the default qualification boundary;
+- perform the applicable correctness, conformance, structural, runtime/JIT, and performance qualification before promotion.
+
+Do not bias NEES toward tiny micro-optimization patches simply because they are easier to measure independently.
+
 ## Repository workflow
 
 Use branches and pull requests for normative changes.
