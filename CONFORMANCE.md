@@ -100,6 +100,21 @@ Training-memory folklore is not evidence.
 
 A NEES-EXTREME scope MUST preserve the disposition of known or reasonably suspected avoidable E0-E2 machine cost.
 
+### Initial baseline audit
+
+The first claim of NEES-EXTREME conformance for a declared scope MUST perform a baseline cost audit over the complete declared E0-E2 hot scope, not only the most recent diff.
+
+That baseline establishes the durable optimization-debt/disposition surface inherited by later work.
+
+Subsequent coherent PRs MAY limit fresh audit work to:
+
+- the affected causal neighborhood;
+- newly introduced execution mechanisms;
+- inherited debt touched or invalidated by the change;
+- requalification triggers crossed by the runtime/platform change.
+
+This preserves maximal effort without re-auditing the entire system after every edit.
+
 The affected hot-path review uses these dispositions:
 
 - **REQUIRED** — required by semantics or another load-bearing constraint.
