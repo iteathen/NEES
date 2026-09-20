@@ -1,4 +1,4 @@
-# NEES Draft 0.2 — Research and Source Map
+# NEES Draft 0.3 — Research and Source Map
 
 NEES separates **primary runtime authorities**, **current production evidence**, and **secondary guidance**. No single source is treated as authority for the whole standard.
 
