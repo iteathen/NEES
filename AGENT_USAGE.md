@@ -141,7 +141,7 @@ If current primary evidence is unavailable, mark the tactic UNVERIFIED rather th
 ### V8 realization
 
 - Is the hot feedback stable or still growing?
-- Are object shapes/elements kinds stable where material?
+- Are object shapes/elements kinds stable at repeated hot access sites?
 - Is a source-level claim actually visible in generated/runtime behavior?
 - Is an optimization dependent on a historical V8 rule?
 - Could the change cross an inlining/code-size threshold?
@@ -150,7 +150,7 @@ If current primary evidence is unavailable, mark the tactic UNVERIFIED rather th
 ### Iteration
 
 - Is a counted loop needed for numeric indexing/fusion/early-exit?
-- Does a higher-level loop actually allocate or invoke callbacks in a material way?
+- Does a higher-level loop introduce avoidable callback, iterator, allocation, dispatch, or conversion cost?
 - Is Node-core avoidance of a builtin caused by primordial/tamper semantics rather than speed?
 - Are we rewriting syntax without removing work?
 
