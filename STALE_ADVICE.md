@@ -22,7 +22,7 @@ Modern V8 compilers support exception handling in optimized code. Do not move er
 
 A catch path can still add code size or work if executed frequently; evaluate the actual path rather than the old prohibition.
 
-Primary context: [Leaving the Sea of Nodes](https://v8.dev/blog/leaving-the-sea-of-nodes).
+Primary context: [High-performance ES2015 and beyond](https://v8.dev/blog/high-performance-es2015), which describes TurboFan as designed to optimize exception handling and the broader language.
 
 ## 3. "A counted for loop is always faster than for-of/forEach"
 
