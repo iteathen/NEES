@@ -31,7 +31,7 @@ before designing E0-E2 implementation changes.
 3. identify the owning boundary that can establish invariants once;
 4. inspect the current representation and runtime boundary;
 5. identify required vs accidental generality;
-6. identify the dominant cost class;
+6. identify the largest currently known cost class for work-priority purposes;
 7. select candidate NEES methods;
 8. state admission condition and falsifier for each realization-sensitive method;
 9. identify capacity/lifetime/failure behavior;
