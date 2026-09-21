@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "repository": "iteathen/NEES",
+  "claims": [
+    {
+      "id": "NEES-SPEC-001",
+      "claim": "Draft 0.4 is the current experimental repository authority for NEES execution and conformance intent.",
+      "evidence_class": "INTERNAL-QUALIFICATION",
+      "status": "experimental normative authority",
+      "oracle": "Repository-controlled specification and verification",
+      "revision": "main",
+      "falsifier": "A later accepted NEES authority supersedes Draft 0.4 or repository verification fails.",
+      "evidence": [
+        "README.md",
+        "SPEC.md",
+        "CONFORMANCE.md",
+        ".github/workflows/verify.yml"
+      ],
+      "limitations": [
+        "Repository authority is not external validation of performance methods."
+      ],
+      "external_reproduction": false
+    },
+    {
+      "id": "NEES-PERF-001",
+      "claim": "NEES conformance by itself proves a performance improvement.",
+      "evidence_class": "UNVALIDATED",
+      "status": "explicitly not a valid general inference",
+      "oracle": null,
+      "revision": "main",
+      "falsifier": "A conforming implementation with no measured enclosing-system improvement is sufficient to reject the inference.",
+      "evidence": [
+        "README.md",
+        "CONFORMANCE.md"
+      ],
+      "limitations": [
+        "Performance qualification is project-, workload-, hardware-, and causal-boundary-specific."
+      ],
+      "external_reproduction": false
+    }
+  ]
+}
