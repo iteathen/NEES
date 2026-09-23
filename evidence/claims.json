@@ -4,12 +4,12 @@
   "claims": [
     {
       "id": "NEES-SPEC-001",
-      "claim": "Draft 0.4 is the current experimental repository authority for NEES execution and conformance intent.",
+      "claim": "Draft 0.5 is the current experimental repository authority for NEES execution and conformance intent.",
       "evidence_class": "INTERNAL-QUALIFICATION",
       "status": "experimental normative authority",
       "oracle": "Repository-controlled specification and verification",
       "revision": "main",
-      "falsifier": "A later accepted NEES authority supersedes Draft 0.4 or repository verification fails.",
+      "falsifier": "A later accepted NEES authority supersedes Draft 0.5 or repository verification fails.",
       "evidence": [
         "README.md",
         "SPEC.md",
@@ -18,6 +18,26 @@
       ],
       "limitations": [
         "Repository authority is not external validation of performance methods."
+      ],
+      "external_reproduction": false
+    },
+    {
+      "id": "NEES-COST-001",
+      "claim": "Draft 0.5 provides a deterministic profile-bound cycle-ledger calculator whose repository fixture resolves to the expected result.",
+      "evidence_class": "INTERNAL-QUALIFICATION",
+      "status": "repository tool and fixture qualification",
+      "oracle": "tools/verify-cost-accounting.mjs",
+      "revision": "main",
+      "falsifier": "Repository verification fails, the fixture no longer resolves to its expected ledger, or the cost profile becomes internally inconsistent.",
+      "evidence": [
+        "COST_ACCOUNTING.md",
+        "tools/calculate-cost.mjs",
+        "tools/verify-cost-accounting.mjs",
+        "cost-models/node26-v8-14.6-x86_64-amd-zen3.json",
+        "examples/cost-ledger-basic.json"
+      ],
+      "limitations": [
+        "This validates calculator/profile composition, not the external accuracy of every cycle entry or the wall-clock performance of adopting code."
       ],
       "external_reproduction": false
     },
