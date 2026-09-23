@@ -1,4 +1,4 @@
-# NEES Core Specification — Draft 0.4
+# NEES Core Specification — Draft 0.5
 
 ## 1. Purpose
 
@@ -115,6 +115,59 @@ Instruction count, branch count, allocation count, deoptimization count, Atomics
 A proxy metric MUST NOT become the optimization objective merely because it is easy to measure.
 
 When reliable evidence exists at the governing optimization unit, it outranks a conflicting local proxy for the performance decision. When such evidence is too noisy, unavailable, or impractical, the missing evidence MUST be recorded as uncertainty rather than assumed favorable.
+
+## 3.1 Quantified execution cost accounting
+
+### NEES-COST-001 — Bind quantified ledgers to a cost profile [STABLE]
+
+A quantified E0-E2 cycle ledger MUST identify the runtime/platform cost profile used for the calculation.
+
+The profile MUST identify the Node/V8 family when source-to-machine lowering is load-bearing and the CPU architecture/microarchitecture when latency, throughput, cache, branch, or atomic cost is load-bearing.
+
+### NEES-COST-002 — No silent zero-cost operations [STABLE]
+
+Every operation counted in a quantified NEES ledger MUST resolve to an explicit cost model.
+
+The model MUST be one of:
+
+- fixed cycle cost;
+- bounded cycle range;
+- symbolic/parameterized cost;
+- unbounded blocking cost.
+
+An unknown or profile-sensitive operation MUST remain named uncertainty. It MUST NOT be silently counted as zero.
+
+### NEES-COST-003 — Count executed operations, not source lines [STABLE]
+
+Function cycle accounting MUST represent the operations executed on the modeled path.
+
+Loop bodies are multiplied by executed iteration count. Conditional and short-circuit paths count only executed work. Calls include callee work plus any separately modeled call/boundary cost.
+
+### NEES-COST-004 — Model memory, branches, and synchronization explicitly [STABLE]
+
+Loads/stores, branches, Atomics, cache-coherence operations, and blocking waits MUST NOT inherit the cycle cost of the arithmetic operation they accompany.
+
+When cache level, prediction state, contention, or scheduling state materially changes cost, the ledger MUST bind that state explicitly or preserve it as a symbolic term.
+
+### NEES-COST-005 — Generated-code mapping is realization-sensitive [V8-SENSITIVE]
+
+A JavaScript source operator MUST NOT be assigned a native instruction cost solely because a plausible instruction exists.
+
+When the source-to-native mapping is load-bearing, generated-code or equivalent current runtime evidence MUST establish the mapping under the declared profile.
+
+### NEES-COST-006 — Cycle sums are evidence, not elapsed-time proof [STABLE]
+
+An additive cycle ledger is a deterministic accounting model. It MUST NOT be presented as exact wall-clock latency unless dependency, overlap, throughput, memory, branch, and runtime effects required for that claim have also been established.
+
+Reliable measurement at the governing optimization unit outranks a contradictory local ledger.
+
+### NEES-COST-007 — Preserve unresolved and blocking cost [STABLE]
+
+Symbolic terms, cycle ranges, and unbounded waits MUST survive aggregation into function and subsystem totals.
+
+A calculator or report MUST NOT convert unresolved terms into optimistic constants merely to produce one number.
+
+Normative accounting details and the repository reference calculator are defined in [COST_ACCOUNTING.md](COST_ACCOUNTING.md).
 
 ## 4. Execution classes
 
