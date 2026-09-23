@@ -1266,7 +1266,7 @@ When the governing measurement cannot be obtained reliably, preserve the uncerta
 
 ---
 
-## M47 — Build a quantified cycle ledger
+## M52 — Build a quantified cycle ledger
 
 **Applies:** E0-E2  
 **Stability:** STABLE / V8-SENSITIVE / PLATFORM-SENSITIVE by entry
