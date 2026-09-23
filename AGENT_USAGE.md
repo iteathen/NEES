@@ -1,4 +1,4 @@
-# NEES Agent Usage Contract — Draft 0.4
+# NEES Agent Usage Contract — Draft 0.5
 
 ## 1. Manager invocation
 
@@ -18,6 +18,7 @@ That instruction means the agent MUST consult:
 - [SPEC.md](SPEC.md);
 - [NODE_V8_METHODS.md](NODE_V8_METHODS.md);
 - the selected runtime profile;
+- [COST_ACCOUNTING.md](COST_ACCOUNTING.md) when quantified cycle accounting is applicable;
 - [STALE_ADVICE.md](STALE_ADVICE.md);
 
 before designing E0-E2 implementation changes.
@@ -43,7 +44,8 @@ before designing E0-E2 implementation changes.
 15. identify observed or suspected candidate costs even when they are smaller than the current dominant bottleneck;
 16. determine whether removing or changing any local cost could weaken a larger structural optimization, alter its amortization, increase coordination/data movement elsewhere, or destroy a beneficial cross-component interaction;
 17. if a local cost appears to enable a larger win, preserve it provisionally as a candidate **TRADEOFF** until an alternative is shown to preserve or improve the enclosing optimization;
-18. if this is the first NEES-EXTREME adoption of the scope, perform a complete E0-E2 baseline cost inventory; otherwise load the inherited debt/disposition record and audit the affected causal neighborhood.
+18. if this is the first NEES-EXTREME adoption of the scope, perform a complete E0-E2 baseline cost inventory; otherwise load the inherited debt/disposition record and audit the affected causal neighborhood;
+19. when a compatible cost profile exists and cycle decomposition can inform the decision, prepare or update the operation/cycle ledger without converting unknown terms to zero.
 
 A local rule or method failure is **not by itself authority to dismantle an enclosing optimization**. The agent must first establish whether the allegedly undesirable local mechanism is an enabling cost, coupling cost, or deliberate tradeoff of the larger realization.
 
@@ -91,6 +93,7 @@ Report:
 Semantic owner:
 NEES class:
 Runtime profile:
+Cost profile / cycle ledger: <profile + report, or not applicable>
 Governing optimization unit:
 Causal role: STANDALONE | ENABLING | COUPLED | UNKNOWN
 Regression surface:
@@ -196,6 +199,17 @@ If current primary evidence is unavailable, mark the tactic UNVERIFIED rather th
 - Conversely, are we destroying a large composite win merely to remove a small local cost?
 - Have small exact opportunities been preserved for later rather than silently discarded?
 - Is "fast enough" being used as an unstated stopping rule?
+
+### Quantified cycle accounting
+
+- Is there a compatible NEES cost profile for this runtime/CPU?
+- What operation IDs represent the executed path?
+- Which costs are fixed, ranged, symbolic, or unbounded?
+- What cache level is assumed for each load-bearing memory access?
+- What branch-prediction and atomic-contention assumptions are being made?
+- Has source-to-machine lowering been verified where the mapping is load-bearing?
+- Does the additive ledger agree with the governing-unit evidence?
+- Are unresolved terms being preserved rather than silently counted as zero?
 
 ### Native/builtin boundary
 
