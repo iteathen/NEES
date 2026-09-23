@@ -138,6 +138,24 @@ Branch cost MUST distinguish at least:
 
 The branch body is accounted separately. A source-level branchless rewrite is not automatically cheaper; its replacement operations and dependency chain must be counted.
 
+## 9.1 Dynamic allocation
+
+Allocation is an admissible quantified operation when its cost is represented honestly.
+
+A dynamic allocation MUST NOT be assigned a cheap constant merely because its source syntax is small. Its model SHOULD preserve the cost-driving parameters that apply to the runtime, including:
+
+- requested bytes;
+- object/view construction;
+- backing-store allocator path;
+- required zero-initialization or zero-page provisioning;
+- GC/external-memory accounting;
+- page commitment and page faults;
+- allocator/runtime state.
+
+When these cannot be reduced to a justified bounded cycle range, the allocation MUST remain a symbolic cycle expression rather than being treated as zero or excluded from the vocabulary.
+
+The first reference profile defines `memory.allocate.typed.u32` as `TYPED_ARRAY_ALLOC_U32(length, typedArrayAllocationPath, pageState, gcState)`.
+
 ## 10. Atomics and blocking
 
 Atomics carry memory-ordering, ownership, and coherence cost in addition to the arithmetic operation.
