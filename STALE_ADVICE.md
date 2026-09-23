@@ -1,4 +1,4 @@
-# NEES Stale-Advice Firewall — Draft 0.4
+# NEES Stale-Advice Firewall — Draft 0.5
 
 This document records common performance statements that MUST NOT be treated as unconditional NEES rules.
 
@@ -225,3 +225,12 @@ A detector can establish that a property exists. It does not automatically estab
 Static/proxy findings create an investigation obligation. Mutation requires an admissible replacement and the correct causal boundary.
 
 **Use instead:** NEES-EVID-005 through EVID-007 and M47 through M51.
+
+
+## 23. "Summed cycle estimates equal wall-clock execution time"
+
+**NEES stance:** false.
+
+An additive cycle ledger is a useful deterministic accounting model, but modern CPUs overlap independent work and expose dependency, throughput, cache, branch, coherence, and frontend effects that a simple sum does not fully capture.
+
+**Use instead:** [COST_ACCOUNTING.md](COST_ACCOUNTING.md), M46 critical-path analysis, and M52 quantified cycle ledgers. Treat the ledger as evidence that must remain subordinate to reliable measurement at the governing optimization unit.
