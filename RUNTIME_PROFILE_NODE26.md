@@ -1,8 +1,8 @@
 # NEES Runtime Profile — Node.js 26 / V8 14.6 family
 
 **Profile ID:** `node26-v8-14.6`  
-**Status:** Draft 0.4 reference profile  
-**Last research pass:** 2026-09-20  
+**Status:** Draft 0.5 reference profile  
+**Last research pass:** 2026-09-22  
 **Target baseline:** Node.js 26.x; exact projects SHOULD record `process.version`, `process.versions.v8`, OS, and architecture.
 
 This profile contains realization facts that are intentionally kept out of the stable NEES core. They may change between Node/V8 releases.
@@ -205,7 +205,29 @@ If async context propagation is required semantics, do not invent a custom conte
 
 Do not enable broad async-hooks observation on an extreme path merely for convenience; use the narrowest diagnostic/context API that answers the requirement.
 
-## 13. Profile requalification triggers
+## 13. Quantified execution-cost extension
+
+Node/V8 runtime facts alone do not define CPU cycle cost. Quantified ledgers therefore bind this runtime profile to a separate CPU cost profile.
+
+The first experimental extension is:
+
+```text
+node26-v8-14.6/x86_64-amd-zen3
+```
+
+Machine-readable profile:
+
+- [cost-models/node26-v8-14.6-x86_64-amd-zen3.json](cost-models/node26-v8-14.6-x86_64-amd-zen3.json)
+
+AMD documents EPYC 7003 processors as Zen 3. The cost profile uses current instruction-level measurement references and keeps uncertain source-to-machine mappings explicitly provisional.
+
+V8 source shows that numeric builtins such as `Math.floor`, `Math.ceil`, `Math.round`, and `Math.trunc` have distinct Smi and Float64 realization paths, reinforcing the rule that source syntax alone is not a cycle cost.
+
+### Profile consequence
+
+A Node/V8 profile and a CPU cost profile are separate authorities. Projects MUST NOT transplant Zen 3 cycle values to another microarchitecture without an appropriate profile.
+
+## 14. Profile requalification triggers
 
 Requalify affected methods when any of these change:
 

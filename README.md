@@ -1,6 +1,6 @@
 # NEES — Node Extreme Execution Standard
 
-**Status:** Draft 0.4 — active research draft  
+**Status:** Draft 0.5 — active research draft  
 **Scope:** Node.js / V8 extreme-performance implementation intent  
 **Authority:** experimental; projects opt in explicitly  
 **Measurement policy:** performance qualification is separate from conformance
@@ -18,10 +18,11 @@ and give a human or coding agent a precise implementation contract for represent
 1. Read [SPEC.md](SPEC.md) for the stable normative contract and execution classes.
 2. Read [NODE_V8_METHODS.md](NODE_V8_METHODS.md) for detailed realization recipes.
 3. Select a runtime profile; the current reference is [RUNTIME_PROFILE_NODE26.md](RUNTIME_PROFILE_NODE26.md).
-4. Read [STALE_ADVICE.md](STALE_ADVICE.md) before relying on remembered JavaScript/V8 performance rules.
-5. Use [CONFORMANCE.md](CONFORMANCE.md) for scope declarations, evidence, deviations, and review.
-6. Use [AGENT_USAGE.md](AGENT_USAGE.md) when directing coding agents.
-7. Consult [REFERENCES.md](REFERENCES.md) for the research/source map.
+4. Use [COST_ACCOUNTING.md](COST_ACCOUNTING.md) when quantifying hot-path operations and function cycle ledgers.
+5. Read [STALE_ADVICE.md](STALE_ADVICE.md) before relying on remembered JavaScript/V8 performance rules.
+6. Use [CONFORMANCE.md](CONFORMANCE.md) for scope declarations, evidence, deviations, and review.
+7. Use [AGENT_USAGE.md](AGENT_USAGE.md) when directing coding agents.
+8. Consult [REFERENCES.md](REFERENCES.md) for the research/source map.
 
 The Draft 0.2 runtime-grounding reassessment is preserved at [research/2026-09-20-runtime-grounding.md](research/2026-09-20-runtime-grounding.md). Draft 0.3's maximal-effort rationale is preserved at [research/2026-09-20-maximal-effort-doctrine.md](research/2026-09-20-maximal-effort-doctrine.md). Draft 0.4's causal-boundary reassessment is preserved at [research/2026-09-20-causal-optimization-units.md](research/2026-09-20-causal-optimization-units.md).
 
@@ -38,6 +39,7 @@ semantic requirement
     -> preserve useful runtime/JIT feedback
     -> minimize allocation, conversion, data movement and coordination
     -> use the best admitted JS/builtin/native realization
+    -> quantify modeled operations/cycles under the selected profile when useful
     -> machine execution
 ```
 
@@ -45,11 +47,12 @@ A richer representation or mechanism is acceptable when it carries independently
 
 ## Stable invariants vs runtime methods
 
-NEES deliberately separates three layers:
+NEES deliberately separates four layers:
 
 1. **Stable execution invariants** — semantic and architectural constraints intended to survive Node/V8 releases.
 2. **Realization methods** — prescriptive Node/V8 techniques with admission conditions and falsifiers.
 3. **Runtime profiles** — concrete, versioned facts such as Worker transport behavior, Buffer pooling, FFI stability, and current V8 architecture.
+4. **Execution cost profiles** — versioned CPU/runtime operation costs and composable cycle models used by [COST_ACCOUNTING.md](COST_ACCOUNTING.md).
 
 That separation is a core feature. NEES is intended to be strict without fossilizing stale V8 folklore.
 
@@ -61,7 +64,7 @@ After semantics and load-bearing constraints are fixed, the goal is to minimize 
 
 A small candidate E0/E1 cost remains entitled to investigation and honest disposition. A larger bottleneck normally gets attention first, but "not the bottleneck", "too small to matter", and "already fast enough" do not erase the smaller candidate.
 
-Draft 0.4 distinguishes **candidate cost** from **known avoidable cost**. A locally cheaper implementation does not prove that the current local cost is avoidable if that cost enables or is coupled to a larger optimization. NEES therefore evaluates performance at the smallest enclosing causal boundary that owns the benefit and protects superior composite realizations from locally greedy rewrites.
+Draft 0.5 retains Draft 0.4's **candidate cost** from **known avoidable cost**. A locally cheaper implementation does not prove that the current local cost is avoidable if that cost enables or is coupled to a larger optimization. NEES therefore evaluates performance at the smallest enclosing causal boundary that owns the benefit and protects superior composite realizations from locally greedy rewrites.
 
 NEES-EXTREME therefore has no "fast enough" stopping condition. Work stops because no further justified improvement is presently known, the remaining structure is required/unavoidable, alternatives have been costed out, a structural successor supersedes the local target, or unresolved work is explicitly retained as optimization debt/deviation.
 
@@ -87,7 +90,7 @@ It means that E0/E1 implementation decisions are explicit: the agent names the s
 
 ## Current reference profile
 
-Draft 0.3 currently uses one reference realization profile:
+Draft 0.5 currently uses one reference realization profile:
 
 - **Node 26 / V8 14.6 family** — [RUNTIME_PROFILE_NODE26.md](RUNTIME_PROFILE_NODE26.md)
 
@@ -113,6 +116,6 @@ Run:
 node tools/verify-repository.mjs
 ```
 
-locally to check required documents, UTF-8, merge markers, JSON and JavaScript syntax, and relative Markdown file links.
+locally to check required documents, UTF-8, merge markers, JSON and JavaScript syntax, relative Markdown file links, and the deterministic cost-accounting fixture.
 
 These are document-integrity checks, not certification of NEES conformance or performance.

@@ -4,6 +4,8 @@
 
 ## Primary entry points
 
+- COST_ACCOUNTING.md: quantified execution-cost profiles, cycle ledgers, and calculator semantics.
+
 - [README.md](https://raw.githubusercontent.com/iteathen/NEES/main/README.md): project overview and documentation entry point.
 - [EVIDENCE.md](https://raw.githubusercontent.com/iteathen/NEES/main/EVIDENCE.md): evidence classes, claim scope, validation limits, and external-validation path.
 - [AGENTS.md](https://raw.githubusercontent.com/iteathen/NEES/main/AGENTS.md): repository-specific agent instructions and authority rules.

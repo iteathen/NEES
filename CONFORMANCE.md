@@ -1,4 +1,4 @@
-# NEES Conformance and Deviations — Draft 0.4
+# NEES Conformance and Deviations — Draft 0.5
 
 ## 1. What conformance means
 
@@ -22,10 +22,11 @@ A conforming subsystem MUST declare enough context to reconstruct its performanc
 Minimum declaration:
 
 ```text
-NEES: Draft 0.4
+NEES: Draft 0.5
 Conformance level: NEES-CORE | NEES-NODE | NEES-EXTREME
 Execution classes: E0/E1/E2/E3/COLD as applicable
 Runtime profile: <profile id>
+Cost profile: <profile id when quantified cycle accounting is used>
 Node: <major or exact version>
 V8: <family or exact process.versions.v8 where relevant>
 OS/arch: <when platform-sensitive>
@@ -34,6 +35,7 @@ Governing optimization unit(s): <smallest enclosing causal performance boundary>
 Regression surface: <shared callers/workloads/resources plausibly affected>
 Hot entry points: <functions/modules>
 Cold/preparation boundaries: <functions/modules>
+Cycle ledger: <path/report or NOT-APPLICABLE>
 ```
 
 A file MAY contain multiple execution classes, but the ownership boundary between them must be explicit.
@@ -248,6 +250,7 @@ An agent changing E0-E2 code MUST report the changed operation in terms of:
 - version-sensitive assumptions;
 - admission condition and falsifier;
 - machine-cost dimensions affected;
+- quantified operation/cycle ledger when used, including unresolved symbolic or blocking terms;
 - remaining known/suspected optimization debt in the affected E0-E2 neighborhood.
 
 This explanation is required even when no wall-clock benchmark is run.

@@ -12,7 +12,8 @@ NEES already separates conformance from performance qualification; this evidence
 
 | Claim | Evidence class | Status |
 | --- | --- | --- |
-| `NEES-SPEC-001` — Draft 0.4 is the current experimental repository authority for NEES execution/conformance intent | **INTERNAL-QUALIFICATION** | repository authority / document integrity |
+| `NEES-SPEC-001` — Draft 0.5 is the current experimental repository authority for NEES execution/conformance intent | **INTERNAL-QUALIFICATION** | repository authority / document integrity |
+| `NEES-COST-001` — Draft 0.5 provides a deterministic profile-bound cycle-ledger calculator and verified fixture | **INTERNAL-QUALIFICATION** | repository/tool integrity; not external timing validation |
 | `NEES-PERF-001` — NEES conformance by itself proves a performance improvement | **UNVALIDATED** | explicitly rejected as a general inference |
 
 Machine-readable records: [`evidence/claims.json`](evidence/claims.json).

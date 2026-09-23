@@ -1,4 +1,4 @@
-# NEES Draft 0.4 — Research and Source Map
+# NEES Draft 0.5 — Research and Source Map
 
 NEES separates **primary runtime authorities**, **current production evidence**, and **secondary guidance**. No single source is treated as authority for the whole standard.
 
@@ -37,6 +37,17 @@ NEES separates **primary runtime authorities**, **current production evidence**,
 - [Trash talk: Orinoco](https://v8.dev/blog/trash-talk) — generational GC, young-object lifetime economics.
 
 These sources demonstrate why NEES keeps V8 tactics version-sensitive rather than turning historic behavior into permanent law.
+
+## 2.1 CPU cycle-cost and generated-code evidence
+
+NEES quantified cost profiles use architecture-specific evidence rather than universal cycle folklore.
+
+- [uops.info](https://uops.info/) — measured instruction latency, reciprocal throughput, µops, and port usage across CPU microarchitectures. The first NEES profile uses its AMD Zen 3 measurements for operations such as ADD, IMUL, and IDIV.
+- [AMD EPYC 7003 microarchitecture overview](https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/white-papers/overview-amd-epyc7003-series-processors-microarchitecture.pdf) — primary AMD documentation establishing EPYC 7003 as Zen 3 and documenting its cache hierarchy.
+- [7-cpu Zen 3 measurements](https://www.7-cpu.com/cpu/Zen3.html) — maintained empirical cache/branch-latency reference used as secondary profile evidence.
+- [V8 Math builtins source](https://chromium.googlesource.com/v8/v8/+/refs/heads/master/src/builtins/math.tq) — current source showing distinct Smi/Float64 realization paths for numeric builtins such as floor/ceil/round/trunc.
+
+These sources support profile entries; they do not prove that a JavaScript source operator lowers to a particular instruction. Generated-code/runtime evidence remains required when that mapping is load-bearing.
 
 ## 3. Language memory model
 
@@ -168,6 +179,7 @@ stable execution invariants
 + detailed Node/V8 recipes
 + admission conditions and falsifiers
 + pinned runtime profiles
++ quantified operation/cycle cost profiles and function ledgers
 + stale-advice firewall
 + semantic vs addressing identity
 + allocation/lifetime discipline

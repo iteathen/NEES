@@ -1,4 +1,4 @@
-# NEES Node/V8 Realization Methods — Draft 0.4
+# NEES Node/V8 Realization Methods — Draft 0.5
 
 This document is the prescriptive realization layer for NEES.
 
@@ -1262,3 +1262,47 @@ Use them to locate likely cost, explain a measured change, falsify a proposed me
 Do not optimize a proxy independently when doing so worsens the governing optimization unit.
 
 When the governing measurement cannot be obtained reliably, preserve the uncertainty and avoid claiming that a proxy improvement proves a system improvement.
+
+
+---
+
+## M52 — Build a quantified cycle ledger
+
+**Applies:** E0-E2  
+**Stability:** STABLE / V8-SENSITIVE / PLATFORM-SENSITIVE by entry
+
+### Admission
+
+Use this method when a hot operation or function can be usefully decomposed into a finite set of modeled execution operations under a sufficiently specific runtime/CPU profile.
+
+### Method
+
+1. select a versioned NEES cost profile;
+2. identify the executed operation sequence or counts for the modeled path;
+3. map source operations to cost-profile operations;
+4. preserve cache, branch, atomic, and blocking state as explicit scenario parameters;
+5. calculate fixed/ranged/symbolic cycle totals with `tools/calculate-cost.mjs` or an equivalent conforming calculator;
+6. retain the operation ledger beside the performance claim when it is load-bearing;
+7. compare local ledger changes at the governing optimization unit before promotion.
+
+Use [COST_ACCOUNTING.md](COST_ACCOUNTING.md) for the normative model.
+
+### Mechanism
+
+The ledger replaces qualitative claims such as "one cheap operation" with a reviewable cost decomposition and makes unresolved costs explicit instead of silently treating them as free.
+
+### Reject
+
+- summing source operators without establishing their runtime lowering;
+- using one cache latency for every memory access;
+- assigning uncontended atomic cost to a contended shared path;
+- treating additive serial cycles as measured wall-clock latency;
+- optimizing a local ledger when the enclosing workload becomes slower.
+
+### Falsifier
+
+If generated code does not match the assumed operation mapping, if a dominant cost is absent from the ledger, or if governing-unit measurement contradicts the modeled conclusion, revise the ledger/profile rather than promoting the local estimate.
+
+### Requalification
+
+Requalify affected mappings when Node/V8, CPU microarchitecture, generated code, cache assumptions, branch behavior, or synchronization behavior materially changes.

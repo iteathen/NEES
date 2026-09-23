@@ -1,0 +1,80 @@
+{
+  "schema_version": "0.1.0",
+  "profile_id": "node26-v8-14.6/x86_64-amd-zen3",
+  "status": "experimental-reference",
+  "runtime": {
+    "node": "26.x",
+    "v8": "14.6 family",
+    "arch": "x86_64",
+    "cpu": "AMD Zen 3"
+  },
+  "sources": [
+    "https://uops.info/html-instr/ADD_01_R32_R32.html",
+    "https://uops.info/html-instr/IMUL_R32_R32.html",
+    "https://uops.info/html-instr/IDIV_R32.html",
+    "https://www.7-cpu.com/cpu/Zen3.html",
+    "https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/white-papers/overview-amd-epyc7003-series-processors-microarchitecture.pdf",
+    "https://chromium.googlesource.com/v8/v8/+/refs/heads/master/src/builtins/math.tq"
+  ],
+  "parameters": {
+    "cacheLevel": ["L1", "L2", "L3", "unknown"],
+    "branchPrediction": ["predicted", "mispredicted", "unknown"],
+    "atomicContention": ["uncontended", "unknown"]
+  },
+  "operations": {
+    "alu.add.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "reciprocal_throughput_cycles": 0.25, "uops": 1, "evidence": "uops.info ADD r32,r32 Zen 3" },
+    "alu.sub.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "reciprocal_throughput_cycles": 0.25, "uops": 1, "evidence": "Zen 3 simple integer ALU reference; exact source lowering remains profile-sensitive" },
+    "alu.and.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "uops": 1, "evidence": "Zen 3 ALU-class provisional; generated-code qualification required for JS source mapping" },
+    "alu.or.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "uops": 1, "evidence": "Zen 3 ALU-class provisional; generated-code qualification required for JS source mapping" },
+    "alu.xor.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "uops": 1, "evidence": "Zen 3 ALU-class provisional; generated-code qualification required for JS source mapping" },
+    "alu.not.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "uops": 1, "evidence": "Zen 3 ALU-class provisional" },
+    "alu.shl.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "reciprocal_throughput_cycles": 0.5, "uops": 1, "evidence": "Zen 3 fixed-count shift class" },
+    "alu.shr.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "reciprocal_throughput_cycles": 0.5, "uops": 1, "evidence": "Zen 3 fixed-count shift class" },
+    "alu.imul.u32": { "cost": { "kind": "fixed", "cycles": 3 }, "latency_cycles": 3, "reciprocal_throughput_cycles": 1, "uops": 1, "evidence": "uops.info IMUL r32,r32 Zen 3" },
+    "alu.idiv.u32": { "cost": { "kind": "range", "min": 9, "max": 14 }, "reciprocal_throughput_cycles": 6, "uops": 2, "evidence": "uops.info IDIV r32 Zen 3; operand-dependent latency" },
+    "bit.clz.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "uops": 1, "evidence": "Zen 3 LZCNT-class reference; source mapping must be qualified" },
+    "control.test.u32": { "cost": { "kind": "fixed", "cycles": 1 }, "latency_cycles": 1, "uops": 1, "evidence": "CMP/TEST ALU-stage reference" },
+    "control.branch": {
+      "cost": {
+        "kind": "select",
+        "parameter": "branchPrediction",
+        "cases": {
+          "predicted": { "kind": "fixed", "cycles": 1 },
+          "mispredicted": { "kind": "range", "min": 16, "max": 20 }
+        },
+        "default": { "kind": "symbolic", "name": "BRANCH_COST" }
+      },
+      "evidence": "1-cycle ledger baseline plus 15-19 cycle Zen 3 misprediction penalty reference"
+    },
+    "memory.load.u32": {
+      "cost": {
+        "kind": "select",
+        "parameter": "cacheLevel",
+        "cases": {
+          "L1": { "kind": "fixed", "cycles": 4 },
+          "L2": { "kind": "fixed", "cycles": 12 },
+          "L3": { "kind": "fixed", "cycles": 47 }
+        },
+        "default": { "kind": "symbolic", "name": "MEMORY_LOAD_COST" }
+      },
+      "evidence": "Zen 3 dependent-load reference; DRAM intentionally remains symbolic"
+    },
+    "memory.store.u32": {
+      "cost": { "kind": "symbolic", "name": "STORE_COST", "min": 0.5 },
+      "reciprocal_throughput_cycles": 0.5,
+      "evidence": "simple hot/local store throughput reference; ownership and coherence remain symbolic"
+    },
+    "atomic.rmw.u32": {
+      "cost": {
+        "kind": "select",
+        "parameter": "atomicContention",
+        "cases": {
+          "uncontended": { "kind": "range", "min": 7.5, "max": 12 }
+        },
+        "default": { "kind": "symbolic", "name": "ATOMIC_RMW_COST", "min": 7.5 }
+      },
+      "evidence": "Zen 3 locked-RMW class; cache-line migration/contention can dominate"
+    },
+    "atomic.wait": { "cost": { "kind": "unbounded", "min": 0 }, "evidence": "blocking wait has no finite elapsed-cycle upper bound" }
+  }
+}
