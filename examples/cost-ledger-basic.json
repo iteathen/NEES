@@ -1,1 +1,21 @@
-__PLACEHOLDER__
+{
+  "schema_version": "0.1.0",
+  "profile": "node26-v8-14.6/x86_64-amd-zen3",
+  "scenario": {
+    "cacheLevel": "L1",
+    "branchPrediction": "predicted",
+    "atomicContention": "uncontended"
+  },
+  "functions": [
+    {
+      "name": "exampleHotFunction",
+      "operations": [
+        { "op": "memory.load.u32", "count": 1 },
+        { "op": "alu.add.u32", "count": 3 },
+        { "op": "alu.and.u32", "count": 2 },
+        { "op": "control.test.u32", "count": 1 },
+        { "op": "control.branch", "count": 1 }
+      ]
+    }
+  ]
+}
